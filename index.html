@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>400 PRO - Restored Original Logic</title>
+  <title>400 PRO - Protected Live</title>
   <style>
     html, body { margin: 0; padding: 0; background: #0b5b2e; font-family: sans-serif; height: 100vh; overflow: hidden; }
     #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #064020; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: opacity 1s ease-in-out; }
@@ -33,7 +33,7 @@
     th { position: sticky; top: 0; background: #111; color: #ffd54f; padding: 10px; z-index: 10; }
     td { padding: 8px; border-bottom: 1px solid #222; font-size: 0.9rem; }
     .alz-btn { position: fixed; top: 68px; right: 10px; background: #ff5252; color: white; border: 2px solid white; border-radius: 8px; font-weight: 900; font-size: 0.6rem; padding: 6px 10px; z-index: 200; display: none; }
-    #win-banner { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; background: #fff; padding: 20px; border-radius: 15px; text-align: center; z-index: 1000; border: 5px solid #ffd54f; }
+    #win-banner { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; background: #fff; padding: 20px; border-radius: 15px; text-align: center; z-index: 1000; border: 5px solid #ffd54f; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
   </style>
 </head>
 <body>
@@ -127,8 +127,15 @@
     const scoreMap = {2:2, 3:3, 4:4, 5:10, 6:6, 7:14, 8:16, 9:27, 10:40};
     const isAdmin = new URLSearchParams(window.location.search).get('role') === 'admin';
 
+    // UI Permissions
     if (isAdmin) {
       document.querySelectorAll('.main-btn, .alz-btn').forEach(b => b.style.display = 'inline-block');
+    } else {
+      document.querySelectorAll('input, select, button').forEach(el => {
+        if(!el.classList.contains('res-btn')) el.disabled = true; // Block main controls
+      });
+      // Specifically disable Win/Loss for spectators
+      document.querySelectorAll('.res-btn').forEach(b => b.style.pointerEvents = 'none');
     }
 
     onValue(stateRef, (snapshot) => {
@@ -144,6 +151,11 @@
       for(let i=0; i<4; i++) {
         document.getElementById('tot-'+i).innerText = totals[i];
         document.getElementById('panel-'+i).classList.remove('dealer-active');
+        // Clear buttons for spectators based on cloud state
+        if(!isAdmin) {
+            document.getElementById('w-'+i).style.background = '';
+            document.getElementById('l-'+i).style.background = '';
+        }
       }
       document.getElementById('panel-'+dealerIdx).classList.add('dealer-active');
 
@@ -170,14 +182,16 @@
       }
     }
 
-    window.moveDealer = () => { dealerIdx = (dealerIdx+1)%4; pushState(); };
+    window.moveDealer = () => { if(isAdmin) { dealerIdx = (dealerIdx+1)%4; pushState(); } };
     window.setRes = (i,r) => {
+      if(!isAdmin) return;
       roundRes[i]=r;
       document.getElementById('w-'+i).style.background=(r==='w'?'#2e7d32':'');
       document.getElementById('l-'+i).style.background=(r==='l'?'#d32f2f':'');
     };
 
     window.toggleBid = () => {
+      if(!isAdmin) return;
       if(!bidsLocked) {
         let sum=0; for(let i=0; i<4; i++) sum+=parseInt(document.getElementById('bid-'+i).value);
         let min = totals.some(t=>t>=40)?13:(totals.some(t=>t>=30)?12:11);
@@ -199,6 +213,7 @@
     }
 
     window.doCalc = () => {
+      if(!isAdmin) return;
       if(roundRes.includes(null)) return alert("Set W/L for all!");
       for(let i=0; i<4; i++){
         let b=parseInt(document.getElementById('bid-'+i).value);
@@ -212,6 +227,7 @@
     };
 
     window.handleNextClick = () => {
+      if(!isAdmin) return;
       if(document.getElementById('win-banner').style.display === 'block') { manualReset(); return; }
       for(let i=0; i<4; i++) totals[i] += parseInt(document.getElementById('bid-'+i).getAttribute('data-last'));
       history.push({rd: round, s: [...totals]});
@@ -230,7 +246,7 @@
       }
     };
 
-    window.manualReset = () => { round=1; totals=[0,0,0,0]; history=[]; bidsLocked=false; pushState(); };
+    window.manualReset = () => { if(isAdmin) { round=1; totals=[0,0,0,0]; history=[]; bidsLocked=false; pushState(); } };
     window.manualHardReset = () => { if(isAdmin && confirm("Reset Match?")) { teamWins=[0,0]; manualReset(); } };
     const pushState = (w = null) => { if(isAdmin) set(stateRef, { round, totals, teamWins, dealerIdx, history, winner: w }); };
     
