@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>400 PRO - MVP Elite</title>
+  <title>400 PRO - Standardized UI</title>
   <style>
     body { margin: 0; padding: 0; background: #0b5b2e; font-family: sans-serif; color: white; overflow-x: hidden; height: 100vh; display: flex; flex-direction: column; }
     #match-header { position: fixed; top: 0; width: 100%; background: #064020; border-bottom: 3px solid #ffd54f; display: flex; justify-content: space-between; align-items: center; z-index: 1000; height: 60px; padding: 0 15px; box-sizing: border-box; }
@@ -16,23 +16,42 @@
     .alz-btn, .reset-select { height: 35px; border-radius: 6px; font-weight: 900; font-size: 0.65rem; cursor: pointer; pointer-events: auto; background: #111; color: #ffd54f; border: 2px solid #ffd54f; outline: none; }
     .alz-btn { background: #ff5252; color: white; border: 2px solid white; width: 85px; }
     .reset-select { width: 85px; }
+    
     .table-container { position: relative; width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .card-table { position: relative; width: 85vw; height: 85vw; max-width: 400px; max-height: 400px; background: radial-gradient(circle, #0f7b3c 0, #064020 85%); border-radius: 50%; }
     .center-panel { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); padding: 10px; border-radius: 15px; text-align: center; width: 95px; border: 2px solid #ffd54f; z-index: 100; }
     .main-btn { background: #ffd54f; color: black; border: none; border-radius: 5px; font-weight: 900; width: 100%; margin: 4px 0; font-size: 0.85rem; padding: 12px 0; cursor: pointer; text-transform: uppercase; display: flex; align-items: center; justify-content: center; line-height: 1; }
-    .player-panel { position: absolute; background: white; border-radius: 12px; width: 110px; height: 165px; text-align: center; display: flex; flex-direction: column; box-shadow: 0 6px 15px rgba(0,0,0,0.5); z-index: 200; border: 1px solid #ccc; }
-    .p-right { top: 50%; right: 15px; transform: translateY(-50%); }
-    .p-left { top: 50%; left: 15px; transform: translateY(-50%); }
-    .p-top { top: 95px; left: 50%; transform: translateX(-50%); }
-    .p-bottom { bottom: 120px; left: 50%; transform: translateX(-50%); }
-    .p-name { border: none; background: transparent; font-weight: 900; width: 100%; font-size: 0.85rem; text-align: center; color: #333; padding: 6px 0; }
-    .bid-sel { width: 85%; margin: 0 auto; height: 28px; font-weight: bold; font-size: 1rem; color: #000; }
-    .res-group { display: flex; justify-content: center; gap: 6px; margin: 4px 0; }
-    .res-btn { width: 38px; height: 38px; border-radius: 6px; font-weight: 900; border: 1px solid #ccc; background: #fff; cursor: pointer; color: #333; transition: 0.2s; }
+
+    /* Standardized Player Panels */
+    .player-panel { 
+        position: absolute; 
+        background: white; 
+        border-radius: 12px; 
+        width: 120px; /* Wider */
+        height: 180px; /* Vertically extended */
+        text-align: center; 
+        display: flex; 
+        flex-direction: column; 
+        box-shadow: 0 6px 15px rgba(0,0,0,0.5); 
+        z-index: 200; 
+        border: 1px solid #ccc; 
+    }
+    
+    .p-right { top: 50%; right: 10px; transform: translateY(-50%); }
+    .p-left { top: 50%; left: 10px; transform: translateY(-50%); }
+    /* Top and Bottom centered horizontally */
+    .p-top { top: 85px; left: 50%; transform: translateX(-50%); }
+    .p-bottom { bottom: 105px; left: 50%; transform: translateX(-50%); }
+
+    .p-name { border: none; background: transparent; font-weight: 900; width: 100%; font-size: 0.85rem; text-align: center; color: #333; padding: 8px 0; }
+    .bid-sel { width: 90%; margin: 0 auto; height: 30px; font-weight: bold; font-size: 1.1rem; color: #000; }
+    .res-group { display: flex; justify-content: center; gap: 8px; margin: 6px 0; }
+    .res-btn { width: 42px; height: 42px; border-radius: 6px; font-weight: 900; border: 1px solid #ccc; background: #fff; cursor: pointer; color: #333; transition: 0.2s; }
     .win-active { background: #2e7d32 !important; color: white !important; border-color: #2e7d32 !important; }
     .loss-active { background: #d32f2f !important; color: white !important; border-color: #d32f2f !important; }
-    .p-tot-display { font-size: 1.8rem; font-weight: 900; background: #eee; margin-top: auto; padding: 6px 0; border-radius: 0 0 12px 12px; color: #333; }
+    .p-tot-display { font-size: 1.9rem; font-weight: 900; background: #eee; margin-top: auto; padding: 8px 0; border-radius: 0 0 12px 12px; color: #333; }
     .dealer-active-score { background: #ffd54f !important; color: #000 !important; }
+
     #winner-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 5000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; box-sizing: border-box; }
     .win-title { font-size: 2.2rem; font-weight: 900; margin: 0; line-height: 1.2; text-transform: uppercase; }
     .mvp-box { background: #ffd54f; color: black; padding: 20px; border-radius: 12px; margin: 25px 0; font-weight: 900; font-size: 1.4rem; min-width: 280px; }
@@ -46,7 +65,7 @@
   <div id="winner-overlay">
     <h2 id="win-team-names" class="win-title">PLAYER & PLAYER</h2>
     <h3 style="color:#ffd54f; margin: 10px 0; font-weight: 900;">WIN THE MATCH!</h3>
-    <div class="mvp-box" id="mvp-display">MVP: <span id="mvp-name">PLAYER</span> (MVP)</div>
+    <div class="mvp-box" id="mvp-display">MATCH MVP: <br><span id="mvp-name" style="font-size:1.8rem">PLAYER</span></div>
     <button class="main-btn" style="width: 220px; height: 60px;" onclick="closeWinnerOverlay()">CLOSE PANEL</button>
   </div>
 
@@ -93,7 +112,7 @@
     const app = initializeApp(firebaseConfig); const db = getDatabase(app); const stateRef = ref(db, 'github_liveGame');
     const isAdmin = new URLSearchParams(window.location.search).get('role') === 'admin';
     
-    let round=1, totals=[0,0,0,0], roundRes=[null,null,null,null], teamWins=[0,0], dealerIdx=3, history=[], bidsLocked=false, matchLimit=1, currentBids=[2,2,2,2];
+    let round=1, totals=[0,0,0,0], roundRes=[null,null,null,null], teamWins=[0,0], dealerIdx=3, history=[], bidsLocked=false, matchLimit=1, currentBids=[2,2,2,2], lastDiffs=[0,0,0,0];
     const scoreMap = {2:2, 3:3, 4:4, 5:10, 6:6, 7:14, 8:16, 9:27, 10:40};
 
     if(isAdmin) document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'flex');
@@ -104,26 +123,29 @@
       history = data.history || []; matchLimit = data.matchLimit || 1; 
       bidsLocked = data.bidsLocked || false; currentBids = data.currentBids || [2,2,2,2];
       roundRes = data.roundRes || [null,null,null,null];
+      lastDiffs = data.lastDiffs || [0,0,0,0];
 
       document.getElementById('m1').innerText = teamWins[0]; 
       document.getElementById('m2').innerText = teamWins[1]; 
       document.getElementById('match-type').value = matchLimit;
-      
-      let req = calculateRequiredTotal(); 
-      document.getElementById('rd-info').innerText = `RD ${round} [${req}]`;
+      document.getElementById('rd-info').innerText = `RD ${round} [${calculateRequiredTotal()}]`;
       
       for(let i=0; i<4; i++) {
         document.getElementById('tot-'+i).innerText = totals[i];
         document.getElementById('tot-'+i).classList.toggle('dealer-active-score', i === dealerIdx);
         updateDropdownOptions(i);
-        const s = document.getElementById('bid-'+i);
-        s.value = currentBids[i];
-        s.disabled = !isAdmin || bidsLocked;
+        document.getElementById('bid-'+i).value = currentBids[i];
+        document.getElementById('bid-'+i).disabled = !isAdmin || bidsLocked;
         document.getElementById('w-'+i).className = 'res-btn' + (roundRes[i] === 'w' ? ' win-active' : '');
         document.getElementById('l-'+i).className = 'res-btn' + (roundRes[i] === 'l' ? ' loss-active' : '');
+        
+        const popEl = document.getElementById('pop-'+i);
+        if (lastDiffs[i] !== 0) {
+            popEl.innerText = (lastDiffs[i] > 0 ? "+" : "") + lastDiffs[i];
+            popEl.style.color = lastDiffs[i] > 0 ? "#4caf50" : "#ff5252";
+        } else { popEl.innerText = ""; }
       }
-      if(bidsLocked) document.getElementById('bid-btn').innerText = "REBID";
-      else document.getElementById('bid-btn').innerText = "BID";
+      document.getElementById('bid-btn').innerText = bidsLocked ? "REBID" : "BID";
       renderHistory();
     });
 
@@ -152,13 +174,14 @@
         let sum = 0; let req = calculateRequiredTotal();
         let newBids = [];
         for(let i=0; i<4; i++) { let val = parseInt(document.getElementById('bid-'+i).value); sum += val; newBids.push(val); }
-        if(sum < req) { alert(`Invalid Total! Minimum required: ${req}. Current: ${sum}`); return; }
+        if(sum < req) { alert(`Invalid Total! Min required: ${req}.`); return; }
         bidsLocked = true; currentBids = newBids; roundRes = ['w','w','w','w']; 
         document.getElementById('calc-btn').disabled = false; document.getElementById('calc-btn').style.opacity = "1";
       } else {
-        bidsLocked = false; document.getElementById('calc-btn').disabled = true; document.getElementById('calc-btn').style.opacity = "0.4";
+        bidsLocked = false; lastDiffs = [0,0,0,0];
+        document.getElementById('calc-btn').disabled = true; document.getElementById('calc-btn').style.opacity = "0.4";
         document.getElementById('next-btn').disabled = true; document.getElementById('next-btn').style.opacity = "0.4";
-        roundRes = [null,null,null,null]; for(let i=0; i<4; i++) document.getElementById('pop-'+i).innerText="";
+        roundRes = [null,null,null,null];
       }
       pushState();
     };
@@ -168,20 +191,20 @@
 
     window.doCalc = () => {
       if(!isAdmin) return;
+      let diffs = [];
       for(let i=0; i<4; i++){
         let b = currentBids[i];
         let s = (totals[i] < 30) ? (scoreMap[b] || b) : b;
-        let f = (roundRes[i] === 'w') ? s : -s;
-        document.getElementById('pop-'+i).innerText = (f > 0 ? "+" : "") + f;
-        document.getElementById('pop-'+i).style.color = f > 0 ? "#4caf50" : "#ff5252";
-        document.getElementById('bid-'+i).setAttribute('data-last', f);
+        diffs.push((roundRes[i] === 'w') ? s : -s);
       }
+      lastDiffs = diffs;
       document.getElementById('next-btn').disabled = false; document.getElementById('next-btn').style.opacity = "1";
+      pushState();
     };
 
     window.handleNextClick = () => {
       if(!isAdmin) return;
-      for(let i=0; i<4; i++) totals[i] += parseInt(document.getElementById('bid-'+i).getAttribute('data-last'));
+      for(let i=0; i<4; i++) totals[i] += lastDiffs[i];
       history.push({rd: round, s: [...totals]});
       let winT1 = ( (totals[0] >= 41 && totals[2] >= 0) || (totals[2] >= 41 && totals[0] >= 0) );
       let winT2 = ( (totals[1] >= 41 && totals[3] >= 0) || (totals[3] >= 41 && totals[1] >= 0) );
@@ -192,44 +215,30 @@
         if(teamWins[winningTeamIdx] >= target) showMatchWinner(winningTeamIdx); else { alert("GAME FINISHED!"); manualReset(); }
         return;
       }
-      round++; dealerIdx = (dealerIdx + 1) % 4; bidsLocked = false; roundRes = [null,null,null,null]; 
+      round++; dealerIdx = (dealerIdx + 1) % 4; bidsLocked = false; roundRes = [null,null,null,null]; lastDiffs = [0,0,0,0];
       currentBids = totals.map(t => getMinBidForScore(t));
       pushState();
     };
 
     function showMatchWinner(teamIdx) {
       const overlay = document.getElementById('winner-overlay');
-      const teamColor = teamIdx === 0 ? "#d32f2f" : "#ffd54f";
-      const p1Idx = teamIdx === 0 ? 0 : 1; 
-      const p2Idx = teamIdx === 0 ? 2 : 3;
+      const p1Idx = teamIdx === 0 ? 0 : 1; const p2Idx = teamIdx === 0 ? 2 : 3;
       const n1 = document.getElementById('name-'+p1Idx).value;
       const n2 = document.getElementById('name-'+p2Idx).value;
-      
       document.getElementById('win-team-names').innerText = `${n1} & ${n2}`;
-      document.getElementById('win-team-names').style.color = teamColor;
-
-      // MVP Calculation
-      let mvpText = "";
-      if (totals[p1Idx] > totals[p2Idx]) {
-        mvpText = `${n1} (MVP)`;
-      } else if (totals[p2Idx] > totals[p1Idx]) {
-        mvpText = `${n2} (MVP)`;
-      } else {
-        mvpText = `${n1} (MVP) & ${n2} (MVP)`;
-      }
-      
-      document.getElementById('mvp-display').innerHTML = `MATCH MVP: <br><span style="font-size:1.8rem">${mvpText}</span>`;
-      overlay.style.display = 'flex'; 
-      pushState();
+      document.getElementById('win-team-names').style.color = teamIdx === 0 ? "#d32f2f" : "#ffd54f";
+      let mvpText = (totals[p1Idx] === totals[p2Idx]) ? `${n1} (MVP) & ${n2} (MVP)` : (totals[p1Idx] > totals[p2Idx] ? `${n1} (MVP)` : `${n2} (MVP)`);
+      document.getElementById('mvp-name').innerText = mvpText;
+      overlay.style.display = 'flex'; pushState();
     }
 
     window.closeWinnerOverlay = () => { document.getElementById('winner-overlay').style.display = 'none'; };
     window.handleReset = (sel) => { if(isAdmin && sel.value) { if(sel.value==='game' && confirm("Reset Game?")) manualReset(); if(sel.value==='match' && confirm("Wipe Match?")) manualHardReset(); sel.value=""; } };
     window.moveDealer = () => { if(isAdmin) { dealerIdx = (dealerIdx+1)%4; pushState(); } };
-    window.manualReset = () => { round=1; totals=[0,0,0,0]; history=[]; bidsLocked=false; roundRes=[null,null,null,null]; currentBids = totals.map(t => getMinBidForScore(t)); pushState(); };
+    window.manualReset = () => { round=1; totals=[0,0,0,0]; history=[]; bidsLocked=false; roundRes=[null,null,null,null]; lastDiffs=[0,0,0,0]; currentBids = totals.map(t => getMinBidForScore(t)); pushState(); };
     window.manualHardReset = () => { teamWins=[0,0]; manualReset(); };
     const renderHistory = () => { const hb = document.getElementById('hist-body'); hb.innerHTML = ""; history.slice().reverse().forEach(row => hb.innerHTML += `<tr><td>${row.rd}</td><td>${row.s[0]}</td><td>${row.s[1]}</td><td>${row.s[2]}</td><td>${row.s[3]}</td></tr>`); };
-    const pushState = () => { if(isAdmin) set(stateRef, { round, totals, teamWins, dealerIdx, history, matchLimit, bidsLocked, currentBids, roundRes }); };
+    const pushState = () => { if(isAdmin) set(stateRef, { round, totals, teamWins, dealerIdx, history, matchLimit, bidsLocked, currentBids, roundRes, lastDiffs }); };
   </script>
 </body>
 </html>
