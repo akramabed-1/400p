@@ -3,31 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>400 PRO - Admin Pro</title>
+  <title>400 PRO - Instant Load</title>
   <style>
+    /* Full height setup with scrolling enabled for history */
     html, body { margin: 0; padding: 0; background: #0b5b2e; font-family: sans-serif; overflow-x: hidden; scroll-behavior: smooth; height: 100%; }
     
-    #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #064020; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: opacity 0.8s ease; pointer-events: none; }
-    #splash h1 { color: #ffd54f; font-size: 3rem; font-weight: 900; margin: 0; }
-
     #match-header { position: fixed; top: 0; width: 100%; background: #064020; border-bottom: 3px solid #ffd54f; display: flex; justify-content: space-around; align-items: center; z-index: 100; height: 60px; }
     .score-box { min-width: 50px; height: 45px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: 900; color: #fff; }
     .bg-red { background: #d32f2f; border: 2px solid white; }
     .bg-black { background: #000; border: 2px solid #555; }
 
-    /* Top Controls */
+    /* Admin UI: Reset Left, Alzheimer Right */
     .admin-only { display: none; }
     .top-ctrl { position: fixed; top: 68px; width: 100%; display: flex; justify-content: space-between; padding: 0 10px; box-sizing: border-box; z-index: 200; }
-    
     .alz-btn { background: #ff5252; color: white; border: 2px solid white; border-radius: 8px; font-weight: 900; font-size: 0.65rem; padding: 10px; cursor: pointer; }
-    .reset-select { background: #444; color: #ffd54f; border: 2px solid #ffd54f; border-radius: 8px; font-weight: 900; font-size: 0.7rem; padding: 8px; cursor: pointer; height: 38px; }
+    .reset-select { background: #222; color: #ffd54f; border: 2px solid #ffd54f; border-radius: 8px; font-weight: 900; font-size: 0.7rem; padding: 8px; cursor: pointer; height: 38px; }
 
-    .table-screen { height: 100vh; width: 100%; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; padding-top: 60px; box-sizing: border-box; }
+    /* Page Layout */
+    .table-screen { height: 100vh; width: 100%; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; padding-top: 60px; box-sizing: border-box; flex-shrink: 0; }
     .card-table { position: relative; width: 92%; max-width: 400px; height: 440px; background: radial-gradient(circle, #0f7b3c 0, #064020 85%); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
     
     .center-panel { background: rgba(0,0,0,0.9); padding: 10px 5px; border-radius: 12px; text-align: center; width: 105px; border: 2px solid #ffd54f; z-index: 10; }
     .main-btn { background: #ffd54f; color: black; border: none; border-radius: 4px; font-weight: 900; width: 100%; margin: 4px 0; font-size: 0.8rem; padding: 12px 0; cursor: pointer; text-transform: uppercase; }
 
+    /* Player Panels */
     .player-panel { position: absolute; background: white; border-radius: 12px; width: 105px; height: 175px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: flex; flex-direction: column; border: 4px solid transparent; }
     .dealer-active { border-color: #ffd54f !important; transform: scale(1.05); z-index: 5; }
     .player-right { left: 78%; top: 50%; transform: translate(-50%, -50%); }
@@ -41,27 +40,26 @@
     .res-btn { width: 38px; height: 38px; border-radius: 4px; font-weight: 900; border: 1px solid #ddd; background: #fff; cursor: pointer; }
     .p-tot-display { font-size: 1.8rem; font-weight: 900; background: #eee; margin-top: auto; padding: 5px 0; border-radius: 0 0 12px 12px; }
 
-    .history-screen { width: 100%; background: #000; border-top: 5px solid #ffd54f; min-height: 400px; padding-bottom: 50px;}
+    /* History below the screen */
+    .history-screen { width: 100%; background: #000; border-top: 5px solid #ffd54f; min-height: 400px; padding-bottom: 50px; }
     table { width: 100%; border-collapse: collapse; color: white; text-align: center; }
-    th { background: #111; padding: 15px; color: #ffd54f; font-size: 0.8rem; position: sticky; top: 0; }
+    th { background: #111; padding: 15px; color: #ffd54f; font-size: 0.8rem; }
     td { padding: 12px; border-bottom: 1px solid #222; font-size: 1.1rem; }
   </style>
 </head>
 <body>
 
-  <div id="splash"><h1>400 PRO</h1></div>
-
   <div id="match-header">
     <div style="display:flex; align-items:center; gap:5px;"><span style="color:#ffd54f;font-weight:900">RED</span><div class="score-box bg-red" id="m1">0</div></div>
-    <div id="admin-indicator" style="color:#ffd54f; font-weight:bold; font-size:0.6rem; border:1px solid #ffd54f; padding:2px 5px; border-radius:4px; display:none;">ADMIN</div>
+    <div id="admin-indicator" style="color:#ffd54f; font-weight:bold; font-size:0.5rem; border:1px solid #ffd54f; padding:2px 4px; border-radius:4px; display:none;">ADMIN MODE</div>
     <div style="display:flex; align-items:center; gap:5px;"><div class="score-box bg-black" id="m2">0</div><span style="color:#ffd54f;font-weight:900">BLACK</span></div>
   </div>
 
-  <div class="top-ctrl admin-only">
+  <div class="top-ctrl admin-only" id="top-ctrl-bar">
     <select class="reset-select" onchange="handleReset(this)">
-      <option value="">RESET OPTIONS</option>
-      <option value="game">NEW GAME (0-0)</option>
-      <option value="match">NEW MATCH (SERIES)</option>
+      <option value="">RESET MENU</option>
+      <option value="game">NEW GAME (SCORES 0)</option>
+      <option value="match">NEW MATCH (FULL WIPE)</option>
     </select>
     <button class="alz-btn" onclick="moveDealer()">ALZHEIMER</button>
   </div>
@@ -76,79 +74,4 @@
         <div class="p-tot-display" id="tot-0" style="color:#d32f2f">0</div>
       </div>
       <div class="player-panel player-top" id="panel-1">
-        <input type="text" value="AMER" id="name-1" class="p-name">
-        <select id="bid-1" class="bid-sel"></select>
-        <div class="res-group"><button class="res-btn" id="w-1" onclick="setRes(1,'w')">W</button><button class="res-btn" id="l-1" onclick="setRes(1,'l')">L</button></div>
-        <div id="pop-1" style="height:12px;font-size:0.75rem;font-weight:bold"></div>
-        <div class="p-tot-display" id="tot-1">0</div>
-      </div>
-      <div class="player-panel player-left" id="panel-2">
-        <input type="text" value="WAEL" id="name-2" class="p-name" style="color:#d32f2f">
-        <select id="bid-2" class="bid-sel"></select>
-        <div class="res-group"><button class="res-btn" id="w-2" onclick="setRes(2,'w')">W</button><button class="res-btn" id="l-2" onclick="setRes(2,'l')">L</button></div>
-        <div id="pop-2" style="height:12px;font-size:0.75rem;font-weight:bold"></div>
-        <div class="p-tot-display" id="tot-2" style="color:#d32f2f">0</div>
-      </div>
-      <div class="player-panel player-bottom" id="panel-3">
-        <input type="text" value="AKRAM" id="name-3" class="p-name">
-        <select id="bid-3" class="bid-sel"></select>
-        <div class="res-group"><button class="res-btn" id="w-3" onclick="setRes(3,'w')">W</button><button class="res-btn" id="l-3" onclick="setRes(3,'l')">L</button></div>
-        <div id="pop-3" style="height:12px;font-size:0.75rem;font-weight:bold"></div>
-        <div class="p-tot-display" id="tot-3">0</div>
-      </div>
-
-      <div class="center-panel">
-        <div id="rd-info" style="color:#ffd54f; font-weight:bold; font-size: 0.7rem; margin-bottom: 2px;">RD 1</div>
-        <button id="bid-btn" class="main-btn admin-only" onclick="toggleBid()">BID</button>
-        <button id="calc-btn" class="main-btn admin-only" onclick="doCalc()" disabled style="opacity:0.5">CALC</button>
-        <button id="next-btn" class="main-btn admin-only" onclick="handleNextClick()" disabled style="opacity:0.5">NEXT</button>
-      </div>
-    </div>
-    <div style="color:#ffd54f; font-weight:bold; font-size:0.7rem; margin-top:20px;">SWIPE UP FOR HISTORY ↓</div>
-  </div>
-
-  <div class="history-screen">
-    <div style="color:#ffd54f; text-align:center; padding:15px; font-weight:900;">SCORE HISTORY</div>
-    <table>
-      <thead><tr><th>RD</th><th>MOH</th><th>AME</th><th>WAE</th><th>AKR</th></tr></thead>
-      <tbody id="hist-body"></tbody>
-    </table>
-  </div>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyC9bc2wY9HkQW9k5Ln-ha7hm0IQr_nHX7s",
-      authDomain: "score-400-33dc7.firebaseapp.com",
-      databaseURL: "https://score-400-33dc7-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "score-400-33dc7"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const stateRef = ref(db, 'github_liveGame');
-
-    const isAdmin = new URLSearchParams(window.location.search).get('role') === 'admin';
-    let round=1, totals=[0,0,0,0], roundRes=[null,null,null,null], teamWins=[0,0], dealerIdx=3, history=[], bidsLocked=false;
-    const scoreMap = {2:2, 3:3, 4:4, 5:10, 6:6, 7:14, 8:16, 9:27, 10:40};
-
-    if(isAdmin) {
-      document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
-      document.getElementById('admin-indicator').style.display = 'block';
-    } else {
-      document.querySelectorAll('input, select').forEach(el => el.disabled = true);
-      document.querySelectorAll('.res-btn').forEach(b => b.style.pointerEvents = 'none');
-    }
-
-    onValue(stateRef, (snapshot) => {
-      const data = snapshot.val();
-      if (!data) return;
-      document.getElementById('splash').style.opacity = '0';
-      round = data.round; totals = data.totals; teamWins = data.teamWins; dealerIdx = data.dealerIdx; history = data.history || [];
-      document.getElementById('m1').innerText = teamWins[0];
-      document.getElementById('m2').innerText = teamWins[1];
-      document.getElementById('rd-info').innerText = "RD " + round;
-      for(let i=0; i<4; i++) {
-        document.getElementById('tot-'+i).innerText = totals[i];
+        <input type="text" value="AMER" id="name-1" class="p-name
