@@ -3,75 +3,164 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>400 PRO - Instant Load</title>
+  <title>400 PRO - Compact Admin</title>
   <style>
-    /* Full height setup with scrolling enabled for history */
-    html, body { margin: 0; padding: 0; background: #0b5b2e; font-family: sans-serif; overflow-x: hidden; scroll-behavior: smooth; height: 100%; }
+    body { margin: 0; padding: 0; background: #0b5b2e; font-family: sans-serif; color: white; overflow-x: hidden; }
     
-    #match-header { position: fixed; top: 0; width: 100%; background: #064020; border-bottom: 3px solid #ffd54f; display: flex; justify-content: space-around; align-items: center; z-index: 100; height: 60px; }
-    .score-box { min-width: 50px; height: 45px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: 900; color: #fff; }
+    /* Header Fixed */
+    #match-header { position: fixed; top: 0; width: 100%; background: #064020; border-bottom: 3px solid #ffd54f; display: flex; justify-content: space-around; align-items: center; z-index: 1000; height: 60px; }
+    .score-box { min-width: 50px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 900; color: #fff; }
     .bg-red { background: #d32f2f; border: 2px solid white; }
     .bg-black { background: #000; border: 2px solid #555; }
 
-    /* Admin UI: Reset Left, Alzheimer Right */
+    /* Compact Admin Toolbar */
     .admin-only { display: none; }
-    .top-ctrl { position: fixed; top: 68px; width: 100%; display: flex; justify-content: space-between; padding: 0 10px; box-sizing: border-box; z-index: 200; }
-    .alz-btn { background: #ff5252; color: white; border: 2px solid white; border-radius: 8px; font-weight: 900; font-size: 0.65rem; padding: 10px; cursor: pointer; }
-    .reset-select { background: #222; color: #ffd54f; border: 2px solid #ffd54f; border-radius: 8px; font-weight: 900; font-size: 0.7rem; padding: 8px; cursor: pointer; height: 38px; }
+    .top-ctrl { position: fixed; top: 65px; width: 100%; display: flex; justify-content: space-between; padding: 0 10px; box-sizing: border-box; z-index: 900; }
+    .alz-btn { background: #ff5252; color: white; border: 1px solid white; border-radius: 6px; font-weight: 900; font-size: 0.6rem; padding: 6px 8px; cursor: pointer; }
+    /* Smaller Dropdown */
+    .reset-select { background: #111; color: #ffd54f; border: 1px solid #ffd54f; border-radius: 6px; font-weight: 900; font-size: 0.6rem; padding: 4px; cursor: pointer; width: 95px; }
 
-    /* Page Layout */
-    .table-screen { height: 100vh; width: 100%; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; padding-top: 60px; box-sizing: border-box; flex-shrink: 0; }
-    .card-table { position: relative; width: 92%; max-width: 400px; height: 440px; background: radial-gradient(circle, #0f7b3c 0, #064020 85%); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    /* Main Area */
+    .table-container { position: relative; width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .card-table { position: relative; width: 92vw; height: 92vw; max-width: 400px; max-height: 400px; background: radial-gradient(circle, #0f7b3c 0, #064020 85%); border-radius: 50%; }
+
+    .center-panel { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.95); padding: 8px; border-radius: 12px; text-align: center; width: 90px; border: 2px solid #ffd54f; z-index: 50; }
+    .main-btn { background: #ffd54f; color: black; border: none; border-radius: 4px; font-weight: 900; width: 100%; margin: 3px 0; font-size: 0.75rem; padding: 8px 0; cursor: pointer; text-transform: uppercase; }
+
+    .player-panel { position: absolute; background: white; border-radius: 10px; width: 95px; height: 155px; text-align: center; display: flex; flex-direction: column; border: 3px solid transparent; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+    .dealer-active { border-color: #ffd54f !important; transform: scale(1.05); z-index: 10; }
     
-    .center-panel { background: rgba(0,0,0,0.9); padding: 10px 5px; border-radius: 12px; text-align: center; width: 105px; border: 2px solid #ffd54f; z-index: 10; }
-    .main-btn { background: #ffd54f; color: black; border: none; border-radius: 4px; font-weight: 900; width: 100%; margin: 4px 0; font-size: 0.8rem; padding: 12px 0; cursor: pointer; text-transform: uppercase; }
+    .p-right  { top: 50%; right: -5px; transform: translateY(-50%); }
+    .p-left   { top: 50%; left: -5px; transform: translateY(-50%); }
+    .p-top    { top: -15px; left: 50%; transform: translateX(-50%); }
+    .p-bottom { bottom: -15px; left: 50%; transform: translateX(-50%); }
 
-    /* Player Panels */
-    .player-panel { position: absolute; background: white; border-radius: 12px; width: 105px; height: 175px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: flex; flex-direction: column; border: 4px solid transparent; }
-    .dealer-active { border-color: #ffd54f !important; transform: scale(1.05); z-index: 5; }
-    .player-right { left: 78%; top: 50%; transform: translate(-50%, -50%); }
-    .player-left { left: 22%; top: 50%; transform: translate(-50%, -50%); }
-    .player-top { top: 12%; left: 50%; transform: translate(-50%, -50%); }
-    .player-bottom { bottom: 12%; left: 50%; transform: translate(-50%, 50%); }
-
-    .p-name { border: none; background: transparent; font-weight: 900; width: 100%; font-size: 0.8rem; text-align: center; color: #333; }
-    .bid-sel { width: 85%; border: 1px solid #ccc; font-weight: bold; height: 32px; margin: 2px auto; }
+    .p-name { border: none; background: transparent; font-weight: 900; width: 100%; font-size: 0.75rem; text-align: center; color: #333; padding: 4px 0; }
+    .bid-sel { width: 85%; margin: 0 auto; height: 26px; font-weight: bold; font-size: 0.8rem; }
     .res-group { display: flex; justify-content: center; gap: 4px; margin: 4px 0; }
-    .res-btn { width: 38px; height: 38px; border-radius: 4px; font-weight: 900; border: 1px solid #ddd; background: #fff; cursor: pointer; }
-    .p-tot-display { font-size: 1.8rem; font-weight: 900; background: #eee; margin-top: auto; padding: 5px 0; border-radius: 0 0 12px 12px; }
+    .res-btn { width: 32px; height: 32px; border-radius: 4px; font-weight: 900; border: 1px solid #ccc; background: #fff; cursor: pointer; }
+    .p-tot-display { font-size: 1.5rem; font-weight: 900; background: #eee; margin-top: auto; padding: 4px 0; border-radius: 0 0 10px 10px; color: #333; }
 
-    /* History below the screen */
-    .history-screen { width: 100%; background: #000; border-top: 5px solid #ffd54f; min-height: 400px; padding-bottom: 50px; }
-    table { width: 100%; border-collapse: collapse; color: white; text-align: center; }
-    th { background: #111; padding: 15px; color: #ffd54f; font-size: 0.8rem; }
-    td { padding: 12px; border-bottom: 1px solid #222; font-size: 1.1rem; }
+    .history-section { background: #000; border-top: 4px solid #ffd54f; padding: 20px 10px 80px 10px; }
+    table { width: 100%; border-collapse: collapse; text-align: center; }
+    th { color: #ffd54f; padding: 10px; border-bottom: 1px solid #333; font-size: 0.75rem; }
+    td { padding: 10px; border-bottom: 1px solid #222; font-size: 1rem; color: #fff; }
   </style>
 </head>
 <body>
 
   <div id="match-header">
     <div style="display:flex; align-items:center; gap:5px;"><span style="color:#ffd54f;font-weight:900">RED</span><div class="score-box bg-red" id="m1">0</div></div>
-    <div id="admin-indicator" style="color:#ffd54f; font-weight:bold; font-size:0.5rem; border:1px solid #ffd54f; padding:2px 4px; border-radius:4px; display:none;">ADMIN MODE</div>
+    <div id="admin-indicator" style="color:#ffd54f; font-weight:bold; font-size:0.5rem; border:1px solid #ffd54f; padding:2px; display:none;">ADMIN</div>
     <div style="display:flex; align-items:center; gap:5px;"><div class="score-box bg-black" id="m2">0</div><span style="color:#ffd54f;font-weight:900">BLACK</span></div>
   </div>
 
-  <div class="top-ctrl admin-only" id="top-ctrl-bar">
+  <div class="top-ctrl admin-only">
     <select class="reset-select" onchange="handleReset(this)">
-      <option value="">RESET MENU</option>
-      <option value="game">NEW GAME (SCORES 0)</option>
-      <option value="match">NEW MATCH (FULL WIPE)</option>
+      <option value="">RESET...</option>
+      <option value="game">NEW GAME</option>
+      <option value="match">NEW MATCH</option>
     </select>
     <button class="alz-btn" onclick="moveDealer()">ALZHEIMER</button>
   </div>
 
-  <div class="table-screen">
+  <div class="table-container">
     <div class="card-table">
-      <div class="player-panel player-right" id="panel-0">
-        <input type="text" value="MOHAMAD" id="name-0" class="p-name" style="color:#d32f2f">
-        <select id="bid-0" class="bid-sel"></select>
-        <div class="res-group"><button class="res-btn" id="w-0" onclick="setRes(0,'w')">W</button><button class="res-btn" id="l-0" onclick="setRes(0,'l')">L</button></div>
-        <div id="pop-0" style="height:12px;font-size:0.75rem;font-weight:bold"></div>
-        <div class="p-tot-display" id="tot-0" style="color:#d32f2f">0</div>
+      <div class="center-panel">
+        <div id="rd-info" style="color:#ffd54f; font-weight:bold; font-size: 0.7rem; margin-bottom: 2px;">RD 1</div>
+        <button id="bid-btn" class="main-btn admin-only" onclick="toggleBid()">BID</button>
+        <button id="calc-btn" class="main-btn admin-only" onclick="doCalc()" disabled style="opacity:0.4">CALC</button>
+        <button id="next-btn" class="main-btn admin-only" onclick="handleNextClick()" disabled style="opacity:0.4">NEXT</button>
       </div>
-      <div class="player-panel player-top" id="panel-1">
-        <input type="text" value="AMER" id="name-1" class="p-name
+
+      <div class="player-panel p-right" id="panel-0"><input type="text" value="MOHAMAD" id="name-0" class="p-name" style="color:#d32f2f"><select id="bid-0" class="bid-sel"></select><div class="res-group"><button class="res-btn" id="w-0" onclick="setRes(0,'w')">W</button><button class="res-btn" id="l-0" onclick="setRes(0,'l')">L</button></div><div id="pop-0" style="height:12px; font-size:0.7rem;"></div><div class="p-tot-display" id="tot-0" style="color:#d32f2f">0</div></div>
+      <div class="player-panel p-top" id="panel-1"><input type="text" value="AMER" id="name-1" class="p-name"><select id="bid-1" class="bid-sel"></select><div class="res-group"><button class="res-btn" id="w-1" onclick="setRes(1,'w')">W</button><button class="res-btn" id="l-1" onclick="setRes(1,'l')">L</button></div><div id="pop-1" style="height:12px; font-size:0.7rem;"></div><div class="p-tot-display" id="tot-1">0</div></div>
+      <div class="player-panel p-left" id="panel-2"><input type="text" value="WAEL" id="name-2" class="p-name" style="color:#d32f2f"><select id="bid-2" class="bid-sel"></select><div class="res-group"><button class="res-btn" id="w-2" onclick="setRes(2,'w')">W</button><button class="res-btn" id="l-2" onclick="setRes(2,'l')">L</button></div><div id="pop-2" style="height:12px; font-size:0.7rem;"></div><div class="p-tot-display" id="tot-2" style="color:#d32f2f">0</div></div>
+      <div class="player-panel p-bottom" id="panel-3"><input type="text" value="AKRAM" id="name-3" class="p-name"><select id="bid-3" class="bid-sel"></select><div class="res-group"><button class="res-btn" id="w-3" onclick="setRes(3,'w')">W</button><button class="res-btn" id="l-3" onclick="setRes(3,'l')">L</button></div><div id="pop-3" style="height:12px; font-size:0.7rem;"></div><div class="p-tot-display" id="tot-3">0</div></div>
+    </div>
+  </div>
+
+  <div class="history-section">
+    <div style="color:#ffd54f; text-align:center; padding:10px; font-weight:bold;">SCORE HISTORY</div>
+    <table>
+      <thead><tr><th>RD</th><th>MOH</th><th>AME</th><th>WAE</th><th>AKR</th></tr></thead>
+      <tbody id="hist-body"></tbody>
+    </table>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC9bc2wY9HkQW9k5Ln-ha7hm0IQr_nHX7s",
+      authDomain: "score-400-33dc7.firebaseapp.com",
+      databaseURL: "https://score-400-33dc7-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "score-400-33dc7"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const stateRef = ref(db, 'github_liveGame');
+
+    const isAdmin = new URLSearchParams(window.location.search).get('role') === 'admin';
+    let round=1, totals=[0,0,0,0], roundRes=[null,null,null,null], teamWins=[0,0], dealerIdx=3, history=[], bidsLocked=false;
+    const scoreMap = {2:2, 3:3, 4:4, 5:10, 6:6, 7:14, 8:16, 9:27, 10:40};
+
+    if(isAdmin) {
+      document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
+      document.getElementById('admin-indicator').style.display = 'block';
+    } else {
+      document.querySelectorAll('input, select').forEach(el => el.disabled = true);
+      document.querySelectorAll('.res-btn').forEach(b => b.style.pointerEvents = 'none');
+    }
+
+    onValue(stateRef, (snapshot) => {
+      const data = snapshot.val();
+      if (!data) return;
+      round = data.round; totals = data.totals; teamWins = data.teamWins; dealerIdx = data.dealerIdx; history = data.history || [];
+      document.getElementById('m1').innerText = teamWins[0];
+      document.getElementById('m2').innerText = teamWins[1];
+      document.getElementById('rd-info').innerText = "RD " + round;
+      for(let i=0; i<4; i++) {
+        document.getElementById('tot-'+i).innerText = totals[i];
+        document.getElementById('panel-'+i).classList.remove('dealer-active');
+      }
+      document.getElementById('panel-'+dealerIdx).classList.add('dealer-active');
+      const hb = document.getElementById('hist-body'); hb.innerHTML = "";
+      history.slice().reverse().forEach(row => hb.innerHTML += `<tr><td>${row.rd}</td><td>${row.s[0]}</td><td>${row.s[1]}</td><td>${row.s[2]}</td><td>${row.s[3]}</td></tr>`);
+      if(!bidsLocked) updateDropdowns();
+    });
+
+    function updateDropdowns() {
+      for(let i=0; i<4; i++){
+        const s = document.getElementById('bid-'+i);
+        s.innerHTML = '';
+        let start = (totals[i] >= 40) ? 4 : (totals[i] >= 30) ? 3 : 2;
+        for(let j=start; j<=10; j++){
+          let o = document.createElement('option'); o.value=j; o.innerText=j; s.appendChild(o);
+        }
+        s.value = start;
+        if(!isAdmin) s.disabled = true;
+      }
+    }
+
+    window.handleReset = (sel) => {
+      if(!isAdmin || !sel.value) return;
+      if(sel.value === 'game') manualReset();
+      if(sel.value === 'match' && confirm("WIPE EVERYTHING?")) manualHardReset();
+      sel.value = "";
+    };
+
+    window.moveDealer = () => { if(isAdmin) { dealerIdx = (dealerIdx+1)%4; pushState(); } };
+    window.setRes = (i,r) => { if(!isAdmin) return; roundRes[i]=r; document.getElementById('w-'+i).style.background=(r==='w'?'#2e7d32':''); document.getElementById('l-'+i).style.background=(r==='l'?'#d32f2f':''); };
+    window.toggleBid = () => { if(!isAdmin) return; if(!bidsLocked) { bidsLocked=true; document.getElementById('bid-btn').innerText="REBID"; document.getElementById('calc-btn').disabled=false; document.getElementById('calc-btn').style.opacity="1"; for(let i=0; i<4; i++) { document.getElementById('bid-'+i).disabled=true; window.setRes(i,'w'); } } else { bidsLocked=false; document.getElementById('bid-btn').innerText="BID"; document.getElementById('calc-btn').disabled=true; document.getElementById('calc-btn').style.opacity="0.4"; for(let i=0; i<4; i++) { document.getElementById('bid-'+i).disabled=false; resetRes(i); } } };
+    function resetRes(i) { roundRes[i] = null; document.getElementById('w-'+i).style.background = ''; document.getElementById('l-'+i).style.background = ''; }
+    window.doCalc = () => { if(!isAdmin) return; for(let i=0; i<4; i++){ let b=parseInt(document.getElementById('bid-'+i).value); let s = (totals[i]<30) ? (scoreMap[b]||b) : b; let f = (roundRes[i]==='w')?s:-s; document.getElementById('pop-'+i).innerText=(f>0?"+":"")+f; document.getElementById('pop-'+i).style.color=f>0?"#4caf50":"#ff5252"; document.getElementById('bid-'+i).setAttribute('data-last', f); } document.getElementById('next-btn').disabled=false; document.getElementById('next-btn').style.opacity="1"; };
+    window.handleNextClick = () => { if(!isAdmin) return; for(let i=0; i<4; i++) totals[i] += parseInt(document.getElementById('bid-'+i).getAttribute('data-last')); history.push({rd: round, s: [...totals]}); round++; dealerIdx=(dealerIdx+1)%4; bidsLocked=false; document.getElementById('bid-btn').innerText="BID"; document.getElementById('calc-btn').disabled=true; document.getElementById('calc-btn').style.opacity="0.4"; document.getElementById('next-btn').disabled=true; document.getElementById('next-btn').style.opacity="0.4"; for(let i=0; i<4; i++){ document.getElementById('bid-'+i).disabled=false; document.getElementById('pop-'+i).innerText=""; resetRes(i); } pushState(); };
+    window.manualReset = () => { if(isAdmin) { round=1; totals=[0,0,0,0]; history=[]; bidsLocked=false; pushState(); } };
+    window.manualHardReset = () => { if(isAdmin) { teamWins=[0,0]; manualReset(); } };
+    const pushState = () => { if(isAdmin) set(stateRef, { round, totals, teamWins, dealerIdx, history }); };
+  </script>
+</body>
+</html>
