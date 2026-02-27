@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>400 PRO - Symmetrical</title>
+  <title>400 PRO - Perfect Symmetry</title>
   <style>
     body { margin: 0; padding: 0; background: #0b5b2e; font-family: sans-serif; color: white; overflow-x: hidden; height: 100vh; display: flex; flex-direction: column; }
     
@@ -12,7 +12,7 @@
     .bg-red { background: #d32f2f; border: 2px solid white; }
     .bg-black { background: #000; border: 2px solid #555; }
 
-    /* Admin Buttons */
+    /* Admin Controls Locked to Edges */
     .admin-only { display: none; }
     .top-ctrl { position: fixed; top: 68px; width: 100%; height: 40px; z-index: 1100; pointer-events: none; }
     .alz-btn, .reset-select { 
@@ -23,21 +23,21 @@
 
     /* Layout Containers */
     .table-container { position: relative; width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .card-table { position: relative; width: 90vw; height: 90vw; max-width: 420px; max-height: 420px; background: radial-gradient(circle, #0f7b3c 0, #064020 85%); border-radius: 50%; }
+    .card-table { position: relative; width: 85vw; height: 85vw; max-width: 400px; max-height: 400px; background: radial-gradient(circle, #0f7b3c 0, #064020 85%); border-radius: 50%; }
 
     .center-panel { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); padding: 10px; border-radius: 15px; text-align: center; width: 95px; border: 2px solid #ffd54f; z-index: 100; }
     .main-btn { background: #ffd54f; color: black; border: none; border-radius: 5px; font-weight: 900; width: 100%; margin: 4px 0; font-size: 0.85rem; padding: 12px 0; cursor: pointer; text-transform: uppercase; }
 
-    /* Optimized Symmetrical Player Panels */
+    /* Symmetrical Player Panels */
     .player-panel { position: absolute; background: white; border-radius: 12px; width: 110px; height: 165px; text-align: center; display: flex; flex-direction: column; box-shadow: 0 6px 15px rgba(0,0,0,0.5); z-index: 200; }
     
-    /* Sides - Fixed overlap */
-    .p-right  { top: 50%; right: -5px; transform: translateY(-50%); }
-    .p-left   { top: 50%; left: -5px; transform: translateY(-50%); }
+    /* Sides */
+    .p-right  { top: 50%; right: -10px; transform: translateY(-50%); }
+    .p-left   { top: 50%; left: -10px; transform: translateY(-50%); }
     
-    /* Vertical Symmetery: Top down from header, Bottom up from base */
-    .p-top    { top: 115px; left: 50%; transform: translateX(-50%); }
-    .p-bottom { bottom: 25px; left: 50%; transform: translateX(-50%); }
+    /* Vertical Symmetry - Perfectly balanced distance from center */
+    .p-top    { top: 120px; left: 50%; transform: translateX(-50%); }
+    .p-bottom { bottom: 120px; left: 50%; transform: translateX(-50%); }
 
     .p-name { border: none; background: transparent; font-weight: 900; width: 100%; font-size: 0.85rem; text-align: center; color: #333; padding: 6px 0; }
     .bid-sel { width: 85%; margin: 0 auto; height: 28px; font-weight: bold; font-size: 1rem; }
