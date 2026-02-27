@@ -3,62 +3,49 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>400 PRO Scoreboard - GitHub Live</title>
+  <title>400 PRO - Restored Original Logic</title>
   <style>
-    html, body { margin: 0; padding: 0; background: #0b5b2e; font-family: sans-serif; overflow-x: hidden; }
-    #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #064020; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: opacity 1s ease-in-out; text-align: center; }
+    html, body { margin: 0; padding: 0; background: #0b5b2e; font-family: sans-serif; height: 100vh; overflow: hidden; }
+    #splash { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #064020; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; transition: opacity 1s ease-in-out; }
     #splash h1 { color: #ffd54f; font-size: 3.5rem; font-weight: 900; margin: 0; }
-    #splash h2 { color: #ffd54f; font-size: 1.8rem; font-weight: 900; margin: 5px 0; text-transform: uppercase; }
     #match-header { position: fixed; top: 0; width: 100%; background: #064020; border-bottom: 3px solid #ffd54f; display: flex; justify-content: space-around; align-items: center; z-index: 100; height: 60px; }
-    .team-display { display: flex; align-items: center; gap: 8px; }
-    .team-label { color: #ffd54f; font-size: 0.9rem; font-weight: 900; text-transform: uppercase; }
-    .score-box { min-width: 50px; height: 45px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 900; color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+    .score-box { min-width: 50px; height: 45px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 900; color: #fff; }
     .bg-red { background: #d32f2f; border: 2px solid white; }
     .bg-black { background: #000; border: 2px solid #555; }
-    .alz-btn { position: fixed; top: 68px; right: 10px; background: #ff5252; color: white; border: 2px solid white; border-radius: 8px; font-weight: 900; font-size: 0.65rem; padding: 8px 0; width: 75px; text-align: center; cursor: pointer; z-index: 200; text-transform: uppercase; display: none; }
-    .main-wrapper { display: flex; flex-direction: column; align-items: center; padding-top: 75px; }
-    .table-area { position: relative; width: 100%; height: 650px; display: flex; justify-content: center; align-items: center; }
-    .card-table { position: relative; width: 95%; max-width: 400px; height: 420px; background: radial-gradient(circle, #0f7b3c 0, #064020 85%); border-radius: 50px; display: flex; align-items: center; justify-content: center; }
-    .center-panel { background: rgba(0,0,0,0.95); padding: 15px 5px; border-radius: 12px; text-align: center; width: 115px; border: 3px solid #ffd54f; z-index: 100; }
-    .main-btn { background: #ffd54f; color: black; border: none; border-radius: 5px; font-weight: 900; width: 90%; margin: 5px 0; font-size: 0.9rem; padding: 10px 0; cursor: pointer; text-transform: uppercase; display: none; }
-    .gray-btn { background: #666 !important; color: white !important; }
-    .player-panel { position: absolute; background: white; color: #222; border-radius: 15px; width: 125px; height: 195px; text-align: center; box-shadow: 0 6px 15px rgba(0,0,0,0.4); z-index: 10; display: flex; flex-direction: column; overflow: hidden; border: 4px solid transparent; box-sizing: border-box; transition: transform 0.3s ease; }
-    .dealer-active { border-color: #ffd54f !important; transform: scale(1.08); z-index: 50; }
-    .player-right { left: calc(50% + 65px); top: 50%; transform: translateY(-50%); }
-    .player-left { left: calc(50% - 190px); top: 50%; transform: translateY(-50%); }
-    .player-top { top: -110px; left: 50%; transform: translateX(-50%); }
-    .player-bottom { bottom: -110px; left: 50%; transform: translateX(-50%); }
-    .p-name { border: none; background: transparent; font-weight: 900; width: 100%; font-size: 0.95rem; text-transform: uppercase; text-align: center; outline: none; }
-    .bid-sel { width: 100%; border-radius: 6px; border: 2px solid #ffd54f; font-size: 20px; font-weight: bold; height: 32px; text-align: center; }
-    .res-group { display: flex; justify-content: center; gap: 6px; margin: 4px 0; }
-    .res-btn { width: 42px; height: 38px; border-radius: 6px; font-weight: 900; border: 1px solid #ccc; background: #fff; cursor: pointer; }
-    .p-tot-display { font-size: 2.2rem; font-weight: 900; background: #f0f0f0; border-top: 1px solid #ddd; padding: 6px 0; margin-top: auto; }
-    .hist-container { width: 100%; background: #000; border-top: 4px solid #ffd54f; padding-bottom: 80px; }
+    .main-wrapper { display: flex; flex-direction: column; height: 100vh; padding-top: 60px; box-sizing: border-box; }
+    .table-area { flex: 0 0 520px; position: relative; display: flex; justify-content: center; align-items: center; }
+    .card-table { position: relative; width: 95%; max-width: 400px; height: 380px; background: radial-gradient(circle, #0f7b3c 0, #064020 85%); border-radius: 50px; display: flex; align-items: center; justify-content: center; }
+    .center-panel { background: rgba(0,0,0,0.95); padding: 10px 5px; border-radius: 12px; text-align: center; width: 110px; border: 3px solid #ffd54f; z-index: 100; }
+    .main-btn { background: #ffd54f; color: black; border: none; border-radius: 5px; font-weight: 900; width: 90%; margin: 4px 0; font-size: 0.85rem; padding: 10px 0; cursor: pointer; text-transform: uppercase; display: none; }
+    .player-panel { position: absolute; background: white; color: #222; border-radius: 15px; width: 115px; height: 175px; text-align: center; box-shadow: 0 6px 15px rgba(0,0,0,0.4); display: flex; flex-direction: column; overflow: hidden; border: 4px solid transparent; }
+    .dealer-active { border-color: #ffd54f !important; transform: scale(1.05); }
+    .player-right { left: calc(50% + 70px); top: 50%; transform: translateY(-50%); }
+    .player-left { left: calc(50% - 185px); top: 50%; transform: translateY(-50%); }
+    .player-top { top: -90px; left: 50%; transform: translateX(-50%); }
+    .player-bottom { bottom: -90px; left: 50%; transform: translateX(-50%); }
+    .p-name { border: none; background: transparent; font-weight: 900; width: 100%; font-size: 0.85rem; text-align: center; }
+    .bid-sel { width: 90%; border: 2px solid #ffd54f; font-size: 18px; font-weight: bold; height: 30px; margin: 2px auto; }
+    .res-group { display: flex; justify-content: center; gap: 4px; margin: 2px 0; }
+    .res-btn { width: 38px; height: 32px; border-radius: 4px; font-weight: 900; border: 1px solid #ccc; background: #fff; cursor: pointer; }
+    .p-tot-display { font-size: 1.8rem; font-weight: 900; background: #f0f0f0; border-top: 1px solid #ddd; padding: 4px 0; margin-top: auto; }
+    .hist-wrapper { flex: 1; background: #000; border-top: 4px solid #ffd54f; overflow-y: auto; -webkit-overflow-scrolling: touch; }
     table { width: 100%; border-collapse: collapse; text-align: center; color: white; }
-    th { background: #111; color: #ffd54f; padding: 12px; }
-    td { padding: 12px; border-bottom: 1px solid #222; }
-    #win-banner { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; background: #fff; padding: 25px; border-radius: 20px; text-align: center; z-index: 1000; border: 5px solid #ffd54f; color: #000; box-shadow: 0 0 100px rgba(0,0,0,0.9); }
-    .mvp-badge { background: #ffd54f; color: #000; font-size: 0.65rem; padding: 2px 4px; border-radius: 4px; margin-left: 5px; font-weight: 900; }
-    #live-indicator { position: fixed; bottom: 10px; left: 10px; width: 10px; height: 10px; background: #4caf50; border-radius: 50%; box-shadow: 0 0 8px #4caf50; animation: pulse 2s infinite; z-index: 1000; }
-    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+    th { position: sticky; top: 0; background: #111; color: #ffd54f; padding: 10px; z-index: 10; }
+    td { padding: 8px; border-bottom: 1px solid #222; font-size: 0.9rem; }
+    .alz-btn { position: fixed; top: 68px; right: 10px; background: #ff5252; color: white; border: 2px solid white; border-radius: 8px; font-weight: 900; font-size: 0.6rem; padding: 6px 10px; z-index: 200; display: none; }
+    #win-banner { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80%; background: #fff; padding: 20px; border-radius: 15px; text-align: center; z-index: 1000; border: 5px solid #ffd54f; }
   </style>
 </head>
 <body>
 
-  <div id="splash">
-    <h1>400 PRO</h1>
-    <h2>SCOREBOARD</h2>
-    <div style="position: absolute; bottom: 50px; color: #ffd54f; font-weight: bold;">GITHUB CLOUD SYNC</div>
-  </div>
-
-  <div id="live-indicator" title="Connected to Cloud"></div>
+  <div id="splash"><h1>400 PRO</h1></div>
 
   <div id="match-header">
-    <div class="team-display"><span class="team-label">RED</span><div class="score-box bg-red" id="m1">0</div></div>
-    <select id="match-type-select" onchange="manualHardReset()" style="background: #222; color: #ffd54f; border: 1px solid #ffd54f; height: 40px; font-weight:bold;">
+    <div style="display:flex; align-items:center; gap:5px;"><span style="color:#ffd54f;font-weight:900">RED</span><div class="score-box bg-red" id="m1">0</div></div>
+    <select id="match-type-select" onchange="manualHardReset()" style="background:#222;color:#ffd54f;border:1px solid #ffd54f;font-weight:bold">
       <option value="1">SINGLE</option><option value="2">BO3</option><option value="3">BO5</option>
     </select>
-    <div class="team-display"><div class="score-box bg-black" id="m2">0</div><span class="team-label">BLACK</span></div>
+    <div style="display:flex; align-items:center; gap:5px;"><div class="score-box bg-black" id="m2">0</div><span style="color:#ffd54f;font-weight:900">BLACK</span></div>
   </div>
 
   <button class="alz-btn" id="alz-btn" onclick="moveDealer()">ALZHEIMER</button>
@@ -67,73 +54,59 @@
     <div class="table-area">
       <div class="card-table">
         <div class="center-panel">
-          <div id="rd-info" style="color:#ffd54f; font-weight:bold; font-size: 0.95rem; margin-bottom: 4px;">RD 1 (11)</div>
+          <div id="rd-info" style="color:#ffd54f; font-weight:bold; font-size: 0.8rem; margin-bottom: 2px;">RD 1 (11)</div>
           <button id="bid-btn" class="main-btn" onclick="toggleBid()">BID</button>
           <button id="calc-btn" class="main-btn" onclick="doCalc()" disabled>CALC</button>
           <button id="next-btn" class="main-btn" onclick="handleNextClick()" disabled>NEXT</button>
         </div>
 
         <div class="player-panel player-right" id="panel-0">
-          <div style="padding:8px 0;"><input type="text" value="MOHAMAD" id="name-0" class="p-name" style="color:#d32f2f"></div>
-          <div style="padding:0 6px;">
-            <select id="bid-0" class="bid-sel"></select>
-            <div class="res-group" id="res-group-0">
-              <button class="res-btn" id="w-0" onclick="setRes(0,'w')">W</button>
-              <button class="res-btn" id="l-0" onclick="setRes(0,'l')">L</button>
-            </div>
-            <div id="pop-0" style="height:14px; font-weight:bold;"></div>
-          </div>
+          <input type="text" value="MOHAMAD" id="name-0" class="p-name" style="color:#d32f2f">
+          <select id="bid-0" class="bid-sel"></select>
+          <div class="res-group"><button class="res-btn" id="w-0" onclick="setRes(0,'w')">W</button><button class="res-btn" id="l-0" onclick="setRes(0,'l')">L</button></div>
+          <div id="pop-0" style="height:12px;font-size:0.7rem;font-weight:bold"></div>
           <div class="p-tot-display" id="tot-0" style="color:#d32f2f">0</div>
         </div>
 
         <div class="player-panel player-top" id="panel-1">
-          <div style="padding:8px 0;"><input type="text" value="AMER" id="name-1" class="p-name"></div>
-          <div style="padding:0 6px;">
-            <select id="bid-1" class="bid-sel"></select>
-            <div class="res-group" id="res-group-1">
-              <button class="res-btn" id="w-1" onclick="setRes(1,'w')">W</button>
-              <button class="res-btn" id="l-1" onclick="setRes(1,'l')">L</button>
-            </div>
-            <div id="pop-1" style="height:14px; font-weight:bold;"></div>
-          </div>
+          <input type="text" value="AMER" id="name-1" class="p-name">
+          <select id="bid-1" class="bid-sel"></select>
+          <div class="res-group"><button class="res-btn" id="w-1" onclick="setRes(1,'w')">W</button><button class="res-btn" id="l-1" onclick="setRes(1,'l')">L</button></div>
+          <div id="pop-1" style="height:12px;font-size:0.7rem;font-weight:bold"></div>
           <div class="p-tot-display" id="tot-1">0</div>
         </div>
 
         <div class="player-panel player-left" id="panel-2">
-          <div style="padding:8px 0;"><input type="text" value="WAEL" id="name-2" class="p-name" style="color:#d32f2f"></div>
-          <div style="padding:0 6px;">
-            <select id="bid-2" class="bid-sel"></select>
-            <div class="res-group" id="res-group-2">
-              <button class="res-btn" id="w-2" onclick="setRes(2,'w')">W</button>
-              <button class="res-btn" id="l-2" onclick="setRes(2,'l')">L</button>
-            </div>
-            <div id="pop-2" style="height:14px; font-weight:bold;"></div>
-          </div>
+          <input type="text" value="WAEL" id="name-2" class="p-name" style="color:#d32f2f">
+          <select id="bid-2" class="bid-sel"></select>
+          <div class="res-group"><button class="res-btn" id="w-2" onclick="setRes(2,'w')">W</button><button class="res-btn" id="l-2" onclick="setRes(2,'l')">L</button></div>
+          <div id="pop-2" style="height:12px;font-size:0.7rem;font-weight:bold"></div>
           <div class="p-tot-display" id="tot-2" style="color:#d32f2f">0</div>
         </div>
 
         <div class="player-panel player-bottom" id="panel-3">
-          <div style="padding:8px 0;"><input type="text" value="AKRAM" id="name-3" class="p-name"></div>
-          <div style="padding:0 6px;">
-            <select id="bid-3" class="bid-sel"></select>
-            <div class="res-group" id="res-group-3">
-              <button class="res-btn" id="w-3" onclick="setRes(3,'w')">W</button>
-              <button class="res-btn" id="l-3" onclick="setRes(3,'l')">L</button>
-            </div>
-            <div id="pop-3" style="height:14px; font-weight:bold;"></div>
-          </div>
+          <input type="text" value="AKRAM" id="name-3" class="p-name">
+          <select id="bid-3" class="bid-sel"></select>
+          <div class="res-group"><button class="res-btn" id="w-3" onclick="setRes(3,'w')">W</button><button class="res-btn" id="l-3" onclick="setRes(3,'l')">L</button></div>
+          <div id="pop-3" style="height:12px;font-size:0.7rem;font-weight:bold"></div>
           <div class="p-tot-display" id="tot-3">0</div>
         </div>
       </div>
     </div>
-    <div class="hist-container"><table><thead><tr><th>RD</th><th>Moh</th><th>Amer</th><th>Wael</th><th>Akr</th></tr></thead><tbody id="hist-body"></tbody></table></div>
+
+    <div class="hist-wrapper">
+      <table>
+        <thead><tr><th>RD</th><th>Moh</th><th>Amer</th><th>Wael</th><th>Akr</th></tr></thead>
+        <tbody id="hist-body"></tbody>
+      </table>
+    </div>
   </div>
 
   <div id="win-banner"></div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyC9bc2wY9HkQW9k5Ln-ha7hm0IQr_nHX7s",
@@ -154,31 +127,19 @@
     const scoreMap = {2:2, 3:3, 4:4, 5:10, 6:6, 7:14, 8:16, 9:27, 10:40};
     const isAdmin = new URLSearchParams(window.location.search).get('role') === 'admin';
 
-    // UI Configuration
     if (isAdmin) {
       document.querySelectorAll('.main-btn, .alz-btn').forEach(b => b.style.display = 'inline-block');
-    } else {
-      document.querySelectorAll('input, select').forEach(e => e.disabled = true);
-      document.querySelectorAll('.res-group').forEach(e => e.style.display = 'none');
     }
 
-    setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(() => document.getElementById('splash').remove(), 1000); }, 2500);
-
-    // Sync Listener
     onValue(stateRef, (snapshot) => {
       const data = snapshot.val();
       if (!data) return;
-      
-      round = data.round;
-      totals = data.totals;
-      teamWins = data.teamWins;
-      dealerIdx = data.dealerIdx;
-      history = data.history || [];
+      round = data.round; totals = data.totals; teamWins = data.teamWins; dealerIdx = data.dealerIdx; history = data.history || [];
       
       document.getElementById('m1').innerText = teamWins[0];
       document.getElementById('m2').innerText = teamWins[1];
-      let minBid = totals.some(t=>t>=40)?13:(totals.some(t=>t>=30)?12:11);
-      document.getElementById('rd-info').innerText = `RD ${round} (${minBid})`;
+      let minB = totals.some(t=>t>=40)?13:(totals.some(t=>t>=30)?12:11);
+      document.getElementById('rd-info').innerText = `RD ${round} (${minB})`;
       
       for(let i=0; i<4; i++) {
         document.getElementById('tot-'+i).innerText = totals[i];
@@ -186,130 +147,100 @@
       }
       document.getElementById('panel-'+dealerIdx).classList.add('dealer-active');
 
-      const hb = document.getElementById('hist-body');
-      hb.innerHTML = "";
-      history.slice().reverse().forEach(row => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${row.rd}</td><td>${row.s[0]}</td><td>${row.s[1]}</td><td>${row.s[2]}</td><td>${row.s[3]}</td>`;
-        hb.appendChild(tr);
-      });
+      const hb = document.getElementById('hist-body'); hb.innerHTML = "";
+      history.forEach(row => hb.innerHTML += `<tr><td>${row.rd}</td><td>${row.s[0]}</td><td>${row.s[1]}</td><td>${row.s[2]}</td><td>${row.s[3]}</td></tr>`);
+      const hw = document.querySelector('.hist-wrapper'); hw.scrollTop = hw.scrollHeight;
 
       if(data.winner) showWinBanner(data.winner);
       else document.getElementById('win-banner').style.display = 'none';
       
-      updateDropdowns();
+      if (!bidsLocked) updateDropdowns();
     });
 
-    const pushToCloud = (winnerObj = null) => {
-      if(!isAdmin) return;
-      set(stateRef, { round, totals, teamWins, dealerIdx, history, winner: winnerObj });
-    };
+    function updateDropdowns() {
+      for(let i=0; i<4; i++){
+        const s = document.getElementById('bid-'+i);
+        s.innerHTML = '';
+        let start = (totals[i] >= 40) ? 4 : (totals[i] >= 30) ? 3 : 2;
+        for(let j=start; j<=10; j++){
+          let o = document.createElement('option'); o.value=j; o.innerText=j; s.appendChild(o);
+        }
+        s.value = start;
+        if (!isAdmin) s.disabled = true;
+      }
+    }
 
-    // Functions
-    window.moveDealer = () => { dealerIdx = (dealerIdx+1)%4; pushToCloud(); };
-
+    window.moveDealer = () => { dealerIdx = (dealerIdx+1)%4; pushState(); };
     window.setRes = (i,r) => {
       roundRes[i]=r;
       document.getElementById('w-'+i).style.background=(r==='w'?'#2e7d32':'');
-      document.getElementById('w-'+i).style.color=(r==='w'?'#fff':'#000');
       document.getElementById('l-'+i).style.background=(r==='l'?'#d32f2f':'');
-      document.getElementById('l-'+i).style.color=(r==='l'?'#fff':'#000');
     };
 
     window.toggleBid = () => {
       if(!bidsLocked) {
         let sum=0; for(let i=0; i<4; i++) sum+=parseInt(document.getElementById('bid-'+i).value);
         let min = totals.some(t=>t>=40)?13:(totals.some(t=>t>=30)?12:11);
-        if(sum < min) return alert("Total bids must be at least "+min);
+        if(sum < min) return alert("Total bids must be "+min);
         bidsLocked=true; document.getElementById('bid-btn').innerText="REBID";
         document.getElementById('calc-btn').disabled=false;
         for(let i=0; i<4; i++) { document.getElementById('bid-'+i).disabled=true; window.setRes(i,'w'); }
       } else {
         bidsLocked=false; document.getElementById('bid-btn').innerText="BID";
         document.getElementById('calc-btn').disabled=true;
-        for(let i=0; i<4; i++) document.getElementById('bid-'+i).disabled=false;
+        for(let i=0; i<4; i++) { document.getElementById('bid-'+i).disabled=false; resetRes(i); }
       }
     };
 
+    function resetRes(i) {
+      roundRes[i] = null;
+      document.getElementById('w-'+i).style.background = '';
+      document.getElementById('l-'+i).style.background = '';
+    }
+
     window.doCalc = () => {
-      if(roundRes.includes(null)) return alert("Set Win/Loss status for all players!");
+      if(roundRes.includes(null)) return alert("Set W/L for all!");
       for(let i=0; i<4; i++){
         let b=parseInt(document.getElementById('bid-'+i).value);
-        let score = (totals[i]<30) ? (scoreMap[b]||b) : b;
-        let final = (roundRes[i]==='w')?score:-score;
-        document.getElementById('pop-'+i).innerText=(final>0?"+":"")+final;
-        document.getElementById('pop-'+i).style.color=final>0?"#4caf50":"#ff5252";
-        document.getElementById('bid-'+i).setAttribute('data-last', final);
+        let s = (totals[i]<30) ? (scoreMap[b]||b) : b;
+        let f = (roundRes[i]==='w')?s:-s;
+        document.getElementById('pop-'+i).innerText=(f>0?"+":"")+f;
+        document.getElementById('pop-'+i).style.color=f>0?"#4caf50":"#ff5252";
+        document.getElementById('bid-'+i).setAttribute('data-last', f);
       }
       document.getElementById('next-btn').disabled=false;
     };
 
     window.handleNextClick = () => {
-      if(document.getElementById('win-banner').style.display === 'block') { manualResetGame(); return; }
-
+      if(document.getElementById('win-banner').style.display === 'block') { manualReset(); return; }
       for(let i=0; i<4; i++) totals[i] += parseInt(document.getElementById('bid-'+i).getAttribute('data-last'));
       history.push({rd: round, s: [...totals]});
-
       let rW = (totals[0]>40||totals[2]>40) && totals[0]>=0 && totals[2]>=0;
       let bW = (totals[1]>40||totals[3]>40) && totals[1]>=0 && totals[3]>=0;
-
       if(rW || bW) {
-        let winnerTeam = (totals[0]+totals[2] > totals[1]+totals[3]) ? 'red' : 'black';
-        if(winnerTeam === 'red') teamWins[0]++; else teamWins[1]++;
-        let matchTarget = parseInt(document.getElementById('match-type-select').value);
-        let winType = (teamWins[0]>=matchTarget||teamWins[1]>=matchTarget) ? "MATCH" : "GAME";
-        
-        let winObj = {
-          type: winType, team: winnerTeam,
-          p1: winnerTeam==='red'?document.getElementById('name-0').value:document.getElementById('name-1').value,
-          s1: winnerTeam==='red'?totals[0]:totals[1],
-          p2: winnerTeam==='red'?document.getElementById('name-2').value:document.getElementById('name-3').value,
-          s2: winnerTeam==='red'?totals[2]:totals[3]
-        };
-        pushToCloud(winObj);
+        let team = (totals[0]+totals[2] > totals[1]+totals[3]) ? 'red' : 'black';
+        if(team === 'red') teamWins[0]++; else teamWins[1]++;
+        pushState({ type: "GAME", team, p1: team==='red'?"Mohamad":"Amer", s1: team==='red'?totals[0]:totals[1], p2: team==='red'?"Wael":"Akram", s2: team==='red'?totals[2]:totals[3] });
       } else {
         round++; dealerIdx=(dealerIdx+1)%4; bidsLocked=false;
         document.getElementById('bid-btn').innerText="BID";
-        document.getElementById('calc-btn').disabled=true;
-        document.getElementById('next-btn').disabled=true;
-        for(let i=0; i<4; i++) {
-          document.getElementById('bid-'+i).disabled=false;
-          document.getElementById('pop-'+i).innerText="";
-        }
-        pushToCloud();
+        document.getElementById('calc-btn').disabled=true; document.getElementById('next-btn').disabled=true;
+        for(let i=0; i<4; i++){ document.getElementById('bid-'+i).disabled=false; document.getElementById('pop-'+i).innerText=""; resetRes(i); }
+        pushState();
       }
     };
 
-    window.manualResetGame = () => {
-      if(!isAdmin) return;
-      let matchOver = teamWins.some(w => w >= parseInt(document.getElementById('match-type-select').value));
-      if(matchOver) teamWins = [0,0];
-      round=1; totals=[0,0,0,0]; history=[]; bidsLocked=false;
-      document.getElementById('next-btn').disabled=true;
-      pushToCloud();
-    };
-
-    window.manualHardReset = () => { if(isAdmin && confirm("Reset Match scores?")) { teamWins=[0,0]; manualResetGame(); } };
-
+    window.manualReset = () => { round=1; totals=[0,0,0,0]; history=[]; bidsLocked=false; pushState(); };
+    window.manualHardReset = () => { if(isAdmin && confirm("Reset Match?")) { teamWins=[0,0]; manualReset(); } };
+    const pushState = (w = null) => { if(isAdmin) set(stateRef, { round, totals, teamWins, dealerIdx, history, winner: w }); };
+    
     function showWinBanner(w) {
-      const b = document.getElementById('win-banner');
-      b.style.display = 'block';
-      let m1 = w.s1 >= w.s2 ? '<span class="mvp-badge">MVP</span>' : '';
-      let m2 = w.s2 >= w.s1 ? '<span class="mvp-badge">MVP</span>' : '';
-      b.innerHTML = `<h2 style="color:#d32f2f">${w.type} OVER</h2><h3>TEAM ${w.team.toUpperCase()} WINS</h3>
-        <div style="text-align:left; background:#eee; padding:15px; border-radius:10px; font-weight:bold;">
-          <p>${w.p1}: ${w.s1} ${m1}</p><p>${w.p2}: ${w.s2} ${m2}</p>
-        </div>
-        ${isAdmin ? `<button onclick="handleNextClick()" style="width:100%; margin-top:15px; padding:12px; background:#000; color:#fff; font-weight:bold; border-radius:8px;">CONTINUE</button>` : `<p style="font-size:0.8rem; margin-top:10px; color:#666;">Waiting for Admin to reset...</p>`}`;
+      const b = document.getElementById('win-banner'); b.style.display = 'block';
+      b.innerHTML = `<h2>${w.type} OVER</h2><h3>TEAM ${w.team.toUpperCase()} WINS</h3>
+        <div style="text-align:left; background:#eee; padding:15px; border-radius:10px; font-weight:bold;"><p>${w.p1}: ${w.s1}</p><p>${w.p2}: ${w.s2}</p></div>
+        ${isAdmin ? `<button onclick="handleNextClick()" style="width:100%; margin-top:15px; padding:12px; background:#000; color:#fff; font-weight:bold; border-radius:8px;">CONTINUE</button>` : `<p>Waiting for Admin...</p>`}`;
     }
-
-    function updateDropdowns() {
-      for(let i=0; i<4; i++){
-        let s=document.getElementById('bid-'+i); s.innerHTML='';
-        let start=totals[i]>=40?4:(totals[i]>=30?3:2);
-        for(let j=start; j<=10; j++){ let o=document.createElement('option'); o.value=j; o.innerText=j; s.appendChild(o); }
-      }
-    }
+    setTimeout(() => { document.getElementById('splash').style.opacity = '0'; setTimeout(() => document.getElementById('splash').remove(), 1000); }, 2000);
   </script>
 </body>
 </html>
