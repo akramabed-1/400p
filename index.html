@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>400 PRO - Admin Fixed</title>
+  <title>400 PRO - Admin Pro</title>
   <style>
     html, body { margin: 0; padding: 0; background: #0b5b2e; font-family: sans-serif; overflow-x: hidden; scroll-behavior: smooth; height: 100%; }
     
@@ -15,17 +15,18 @@
     .bg-red { background: #d32f2f; border: 2px solid white; }
     .bg-black { background: #000; border: 2px solid #555; }
 
-    /* Admin Specific Elements - Hidden by default */
+    /* Top Controls */
     .admin-only { display: none; }
-
-    .alz-btn { position: fixed; top: 68px; right: 10px; background: #ff5252; color: white; border: 2px solid white; border-radius: 8px; font-weight: 900; font-size: 0.7rem; padding: 10px; z-index: 200; cursor: pointer; }
+    .top-ctrl { position: fixed; top: 68px; width: 100%; display: flex; justify-content: space-between; padding: 0 10px; box-sizing: border-box; z-index: 200; }
+    
+    .alz-btn { background: #ff5252; color: white; border: 2px solid white; border-radius: 8px; font-weight: 900; font-size: 0.65rem; padding: 10px; cursor: pointer; }
+    .reset-select { background: #444; color: #ffd54f; border: 2px solid #ffd54f; border-radius: 8px; font-weight: 900; font-size: 0.7rem; padding: 8px; cursor: pointer; height: 38px; }
 
     .table-screen { height: 100vh; width: 100%; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; padding-top: 60px; box-sizing: border-box; }
     .card-table { position: relative; width: 92%; max-width: 400px; height: 440px; background: radial-gradient(circle, #0f7b3c 0, #064020 85%); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
     
-    .center-panel { background: rgba(0,0,0,0.9); padding: 10px 5px; border-radius: 12px; text-align: center; width: 110px; border: 2px solid #ffd54f; z-index: 10; }
-    .main-btn { background: #ffd54f; color: black; border: none; border-radius: 4px; font-weight: 900; width: 100%; margin: 3px 0; font-size: 0.75rem; padding: 10px 0; cursor: pointer; text-transform: uppercase; }
-    .reset-btn { background: #ff5252 !important; color: white !important; font-size: 0.65rem !important; }
+    .center-panel { background: rgba(0,0,0,0.9); padding: 10px 5px; border-radius: 12px; text-align: center; width: 105px; border: 2px solid #ffd54f; z-index: 10; }
+    .main-btn { background: #ffd54f; color: black; border: none; border-radius: 4px; font-weight: 900; width: 100%; margin: 4px 0; font-size: 0.8rem; padding: 12px 0; cursor: pointer; text-transform: uppercase; }
 
     .player-panel { position: absolute; background: white; border-radius: 12px; width: 105px; height: 175px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: flex; flex-direction: column; border: 4px solid transparent; }
     .dealer-active { border-color: #ffd54f !important; transform: scale(1.05); z-index: 5; }
@@ -42,7 +43,7 @@
 
     .history-screen { width: 100%; background: #000; border-top: 5px solid #ffd54f; min-height: 400px; padding-bottom: 50px;}
     table { width: 100%; border-collapse: collapse; color: white; text-align: center; }
-    th { background: #111; padding: 15px; color: #ffd54f; font-size: 0.8rem; }
+    th { background: #111; padding: 15px; color: #ffd54f; font-size: 0.8rem; position: sticky; top: 0; }
     td { padding: 12px; border-bottom: 1px solid #222; font-size: 1.1rem; }
   </style>
 </head>
@@ -56,7 +57,14 @@
     <div style="display:flex; align-items:center; gap:5px;"><div class="score-box bg-black" id="m2">0</div><span style="color:#ffd54f;font-weight:900">BLACK</span></div>
   </div>
 
-  <button class="alz-btn admin-only" id="alz-btn" onclick="moveDealer()">ALZHEIMER</button>
+  <div class="top-ctrl admin-only">
+    <select class="reset-select" onchange="handleReset(this)">
+      <option value="">RESET OPTIONS</option>
+      <option value="game">NEW GAME (0-0)</option>
+      <option value="match">NEW MATCH (SERIES)</option>
+    </select>
+    <button class="alz-btn" onclick="moveDealer()">ALZHEIMER</button>
+  </div>
 
   <div class="table-screen">
     <div class="card-table">
@@ -94,8 +102,6 @@
         <button id="bid-btn" class="main-btn admin-only" onclick="toggleBid()">BID</button>
         <button id="calc-btn" class="main-btn admin-only" onclick="doCalc()" disabled style="opacity:0.5">CALC</button>
         <button id="next-btn" class="main-btn admin-only" onclick="handleNextClick()" disabled style="opacity:0.5">NEXT</button>
-        <button class="main-btn reset-btn admin-only" style="background:#444 !important;" onclick="manualReset()">NEW GAME</button>
-        <button class="main-btn reset-btn admin-only" onclick="manualHardReset()">NEW MATCH</button>
       </div>
     </div>
     <div style="color:#ffd54f; font-weight:bold; font-size:0.7rem; margin-top:20px;">SWIPE UP FOR HISTORY ↓</div>
@@ -128,7 +134,6 @@
     let round=1, totals=[0,0,0,0], roundRes=[null,null,null,null], teamWins=[0,0], dealerIdx=3, history=[], bidsLocked=false;
     const scoreMap = {2:2, 3:3, 4:4, 5:10, 6:6, 7:14, 8:16, 9:27, 10:40};
 
-    // --- CRITICAL ADMIN CHECK ---
     if(isAdmin) {
       document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
       document.getElementById('admin-indicator').style.display = 'block';
@@ -147,84 +152,3 @@
       document.getElementById('rd-info').innerText = "RD " + round;
       for(let i=0; i<4; i++) {
         document.getElementById('tot-'+i).innerText = totals[i];
-        document.getElementById('panel-'+i).classList.remove('dealer-active');
-      }
-      document.getElementById('panel-'+dealerIdx).classList.add('dealer-active');
-      const hb = document.getElementById('hist-body'); hb.innerHTML = "";
-      history.forEach(row => hb.innerHTML += `<tr><td>${row.rd}</td><td>${row.s[0]}</td><td>${row.s[1]}</td><td>${row.s[2]}</td><td>${row.s[3]}</td></tr>`);
-      if(!bidsLocked) updateDropdowns();
-    });
-
-    function updateDropdowns() {
-      for(let i=0; i<4; i++){
-        const s = document.getElementById('bid-'+i);
-        s.innerHTML = '';
-        let start = (totals[i] >= 40) ? 4 : (totals[i] >= 30) ? 3 : 2;
-        for(let j=start; j<=10; j++){
-          let o = document.createElement('option'); o.value=j; o.innerText=j; s.appendChild(o);
-        }
-        s.value = start;
-        if(!isAdmin) s.disabled = true;
-      }
-    }
-
-    window.moveDealer = () => { if(isAdmin) { dealerIdx = (dealerIdx+1)%4; pushState(); } };
-    window.setRes = (i,r) => {
-      if(!isAdmin) return;
-      roundRes[i]=r;
-      document.getElementById('w-'+i).style.background=(r==='w'?'#2e7d32':'');
-      document.getElementById('l-'+i).style.background=(r==='l'?'#d32f2f':'');
-    };
-
-    window.toggleBid = () => {
-      if(!isAdmin) return;
-      if(!bidsLocked) {
-        bidsLocked=true; document.getElementById('bid-btn').innerText="REBID";
-        document.getElementById('calc-btn').disabled=false; document.getElementById('calc-btn').style.opacity="1";
-        for(let i=0; i<4; i++) { document.getElementById('bid-'+i).disabled=true; window.setRes(i,'w'); }
-      } else {
-        bidsLocked=false; document.getElementById('bid-btn').innerText="BID";
-        document.getElementById('calc-btn').disabled=true; document.getElementById('calc-btn').style.opacity="0.5";
-        for(let i=0; i<4; i++) { document.getElementById('bid-'+i).disabled=false; resetRes(i); }
-      }
-    };
-
-    function resetRes(i) {
-      roundRes[i] = null;
-      document.getElementById('w-'+i).style.background = '';
-      document.getElementById('l-'+i).style.background = '';
-    }
-
-    window.doCalc = () => {
-      if(!isAdmin) return;
-      for(let i=0; i<4; i++){
-        let b=parseInt(document.getElementById('bid-'+i).value);
-        let s = (totals[i]<30) ? (scoreMap[b]||b) : b;
-        let f = (roundRes[i]==='w')?s:-s;
-        document.getElementById('pop-'+i).innerText=(f>0?"+":"")+f;
-        document.getElementById('pop-'+i).style.color=f>0?"#4caf50":"#ff5252";
-        document.getElementById('bid-'+i).setAttribute('data-last', f);
-      }
-      document.getElementById('next-btn').disabled=false; document.getElementById('next-btn').style.opacity="1";
-    };
-
-    window.handleNextClick = () => {
-      if(!isAdmin) return;
-      for(let i=0; i<4; i++) totals[i] += parseInt(document.getElementById('bid-'+i).getAttribute('data-last'));
-      history.push({rd: round, s: [...totals]});
-      round++; dealerIdx=(dealerIdx+1)%4; bidsLocked=false;
-      document.getElementById('bid-btn').innerText="BID";
-      document.getElementById('calc-btn').disabled=true; document.getElementById('calc-btn').style.opacity="0.5";
-      document.getElementById('next-btn').disabled=true; document.getElementById('next-btn').style.opacity="0.5";
-      for(let i=0; i<4; i++){ document.getElementById('bid-'+i).disabled=false; document.getElementById('pop-'+i).innerText=""; resetRes(i); }
-      pushState();
-    };
-
-    window.manualReset = () => { if(isAdmin) { round=1; totals=[0,0,0,0]; history=[]; bidsLocked=false; pushState(); } };
-    window.manualHardReset = () => { if(isAdmin && confirm("RESET MATCH?")) { teamWins=[0,0]; manualReset(); } };
-    const pushState = () => { if(isAdmin) set(stateRef, { round, totals, teamWins, dealerIdx, history }); };
-    
-    setTimeout(() => { if(document.getElementById('splash')) document.getElementById('splash').remove(); }, 3000);
-  </script>
-</body>
-</html>
