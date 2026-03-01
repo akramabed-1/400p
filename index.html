@@ -101,7 +101,7 @@
   <div class="table-container">
     <div class="card-table">
       <div class="center-panel">
-        <div id="rd-info" style="color:#ffd54f; font-weight:bold; font-size: 0.75rem; margin-bottom: 4px;">RD 1 [11]</div>
+        <div id="rd-info" style="color:#ffd54f; font-weight:bold; font-size: 0.75rem; margin-bottom: 4px;">RD 1</div>
         <button id="bid-btn" class="main-btn admin-only" onclick="toggleBid()">BID</button>
         <button id="calc-btn" class="main-btn admin-only" onclick="doCalc()" disabled style="opacity:0.4">CALC</button>
         <button id="next-btn" class="main-btn admin-only" onclick="handleNextClick()" disabled style="opacity:0.4">NEXT</button>
@@ -132,15 +132,15 @@
     let gameWinner = null, matchWinner = null, playerGameWins = [0,0,0,0], showOverlay = false;
     const scoreMap = {2:2, 3:3, 4:4, 5:10, 6:6, 7:14, 8:16, 9:27, 10:40};
 
-    // Helper functions
     const getMinBidForScore = (s) => (s >= 40 ? 4 : (s >= 30 ? 3 : 2));
     const updateDropdownOptions = (i, score) => {
-      const s = document.getElementById('bid-'+i); s.innerHTML = '';
+      const s = document.getElementById('bid-'+i); if(!s) return;
+      s.innerHTML = '';
       let start = getMinBidForScore(score);
       for(let j=start; j<=10; j++){ let o = document.createElement('option'); o.value=j; o.innerText=j; s.appendChild(o); }
     };
 
-    // IMMEDIATE INITIALIZATION
+    // INITIAL UI BOOT
     for(let i=0; i<4; i++) updateDropdownOptions(i, 0);
     if(isAdmin) document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'flex');
 
@@ -150,8 +150,9 @@
       dealerIdx = data.dealerIdx; history = data.history || []; matchLimit = data.matchLimit; 
       bidsLocked = data.bidsLocked; currentBids = data.currentBids;
       roundRes = data.roundRes; lastDiffs = data.lastDiffs;
-      gameWinner = data.gameWinner; matchWinner = data.matchWinner; 
-      playerGameWins = data.playerGameWins;
+      gameWinner = data.gameWinner ?? null; 
+      matchWinner = data.matchWinner ?? null; 
+      playerGameWins = data.playerGameWins || [0,0,0,0];
       showOverlay = data.showOverlay ?? false;
 
       document.getElementById('m1').innerText = teamWins[0]; 
@@ -160,7 +161,16 @@
       document.getElementById('rd-info').innerText = `RD ${round}`;
       
       const nextBtn = document.getElementById('next-btn');
-      nextBtn.innerText = matchWinner !== null ? "NEXT MATCH" : (gameWinner !== null ? "NEXT GAME" : "NEXT");
+      if (matchWinner !== null) { 
+        nextBtn.innerText = "NEXT MATCH"; nextBtn.disabled = false; nextBtn.style.opacity = "1";
+      } else if (gameWinner !== null) { 
+        nextBtn.innerText = "NEXT GAME"; nextBtn.disabled = false; nextBtn.style.opacity = "1";
+      } else { 
+        nextBtn.innerText = "NEXT"; 
+        const hasDiffs = lastDiffs.some(d => d !== 0);
+        nextBtn.disabled = !hasDiffs;
+        nextBtn.style.opacity = hasDiffs ? "1" : "0.4";
+      }
 
       for(let i=0; i<4; i++) {
         document.getElementById('th-'+i).innerText = document.getElementById('name-'+i).value.substring(0,3).toUpperCase();
@@ -180,6 +190,9 @@
       else document.getElementById('winner-overlay').style.display = 'none';
 
       document.getElementById('bid-btn').innerText = bidsLocked ? "REBID" : "BID";
+      const calcBtn = document.getElementById('calc-btn');
+      calcBtn.disabled = !bidsLocked || (gameWinner !== null);
+      calcBtn.style.opacity = calcBtn.disabled ? "0.4" : "1";
       renderHistory();
     });
 
@@ -206,9 +219,8 @@
         if(teamWins[winIdx] >= Math.ceil(matchLimit/2)) matchWinner = winIdx;
       } else {
         round++; dealerIdx = (dealerIdx + 1) % 4; bidsLocked = false; roundRes = [null,null,null,null]; lastDiffs = [0,0,0,0];
+        // FORCE DEFAULT BIDS FOR NEW ROUND
         currentBids = totals.map(t => getMinBidForScore(t));
-        document.getElementById('next-btn').disabled = true; document.getElementById('next-btn').style.opacity = "0.4";
-        document.getElementById('calc-btn').disabled = true; document.getElementById('calc-btn').style.opacity = "0.4";
       }
       pushState();
     };
@@ -216,7 +228,7 @@
     window.closeWinnerOverlay = () => { if(!isAdmin) return; showOverlay = false; pushState(); };
 
     window.toggleBid = () => {
-      if(!isAdmin) return;
+      if(!isAdmin || gameWinner !== null) return;
       if(!bidsLocked) {
         let sum = 0, req = 11;
         for(let i=0; i<4; i++) { if(totals[i] >= 40) req = 13; else if(totals[i] >= 30 && req < 13) req = 12; }
@@ -224,27 +236,23 @@
         for(let i=0; i<4; i++) { let v = parseInt(document.getElementById('bid-'+i).value); sum += v; newBids.push(v); }
         if(sum < req) { window.showWarning(`MINIMUM BID: ${req}`); return; }
         bidsLocked = true; currentBids = newBids; roundRes = ['w','w','w','w']; 
-        document.getElementById('calc-btn').disabled = false; document.getElementById('calc-btn').style.opacity = "1";
       } else {
         bidsLocked = false; lastDiffs = [0,0,0,0]; roundRes = [null,null,null,null];
-        document.getElementById('calc-btn').disabled = true; document.getElementById('calc-btn').style.opacity = "0.4";
-        document.getElementById('next-btn').disabled = true; document.getElementById('next-btn').style.opacity = "0.4";
       }
       pushState();
     };
 
-    window.setRes = (i,r) => { if(!isAdmin) return; roundRes[i]=r; pushState(); };
+    window.setRes = (i,r) => { if(!isAdmin || !bidsLocked) return; roundRes[i]=r; pushState(); };
     window.doCalc = () => {
-      if(!isAdmin) return;
+      if(!isAdmin || !bidsLocked) return;
       lastDiffs = [0,1,2,3].map(i => {
         let b = currentBids[i]; let s = (totals[i] < 30) ? (scoreMap[b] || b) : b;
         return (roundRes[i] === 'w') ? s : -s;
       });
-      document.getElementById('next-btn').disabled = false; document.getElementById('next-btn').style.opacity = "1";
       pushState();
     };
 
-    window.manualReset = () => { round=1; totals=[0,0,0,0]; history=[]; bidsLocked=false; roundRes=[null,null,null,null]; lastDiffs=[0,0,0,0]; currentBids = [2,2,2,2]; gameWinner=null; showOverlay=false; document.getElementById('next-btn').disabled = true; document.getElementById('next-btn').style.opacity = "0.4"; };
+    window.manualReset = () => { round=1; totals=[0,0,0,0]; history=[]; bidsLocked=false; roundRes=[null,null,null,null]; lastDiffs=[0,0,0,0]; currentBids = [2,2,2,2]; gameWinner=null; showOverlay=false; };
     window.manualHardReset = () => { teamWins=[0,0]; playerGameWins=[0,0,0,0]; manualReset(); matchWinner=null; };
     window.handleReset = (sel) => { if(isAdmin && sel.value) { if(sel.value==='game' && confirm("Reset Game?")) manualReset(); if(sel.value==='match' && confirm("Wipe Match?")) manualHardReset(); sel.value=""; pushState(); } };
     window.moveDealer = () => { if(isAdmin) { dealerIdx = (dealerIdx+1)%4; pushState(); } };
