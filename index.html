@@ -155,14 +155,14 @@
     window.announceScore = () => {
       const p = [0,1,2,3].map(i => {
         let n = document.getElementById(`name-${i}`).value;
-        if (n.toUpperCase() === "WAEL") n = "Wa'el"; 
+        if (n.toUpperCase() === "WAEL") n = "Wah El"; 
         return { name: n, score: totals[i] };
       });
       const black = [p[1], p[3]].sort((a,b) => b.score - a.score);
       const red = [p[0], p[2]].sort((a,b) => b.score - a.score);
       const text = `${black[0].name},,, ${black[0].score}. ,,, ,,, ${black[1].name},,, ${black[1].score}. ,,, ,,, ${red[0].name},,, ${red[0].score}. ,,, ,,, ${red[1].name},,, ${red[1].score}.`;
       const msg = new SpeechSynthesisUtterance(text);
-      msg.rate = 0.85; msg.pitch = 1.0; msg.lang = 'en-US';
+      msg.rate = 0.82; msg.pitch = 1.0; msg.lang = 'en-US';
       window.speechSynthesis.speak(msg);
     };
 
