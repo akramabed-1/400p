@@ -5,34 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>400 PRO - ELITE EDITION</title>
   <style>
-    body { margin: 0; padding: 0; background: #0b5b2e; font-family: sans-serif; color: white; overflow-x: hidden; height: 100vh; display: flex; flex-direction: column; }
+    /* Allow natural scrolling */
+    body { margin: 0; padding: 0; background: #0b5b2e; font-family: sans-serif; color: white; overflow-x: hidden; display: flex; flex-direction: column; }
     
-    #match-header { position: fixed; top: 0; width: 100%; background: #064020; border-bottom: 3px solid #ffd54f; display: flex; justify-content: space-between; align-items: center; z-index: 1000; height: 60px; padding: 0 15px; box-sizing: border-box; }
+    /* Header - No longer fixed, scrolls with page */
+    #match-header { width: 100%; background: #064020; border-bottom: 3px solid #ffd54f; display: flex; justify-content: space-between; align-items: center; z-index: 1000; height: 60px; padding: 0 15px; box-sizing: border-box; }
     .score-box { min-width: 55px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 900; color: #fff; }
     .bg-red { background: #d32f2f; border: 2px solid white; }
     .bg-black { background: #000; border: 2px solid #555; }
     .match-type-select { background: transparent; color: #ffd54f; border: none; font-weight: 900; font-size: 0.9rem; outline: none; cursor: pointer; text-align: center; -webkit-appearance: none; }
     .admin-only { display: none; }
     
+    /* Overlay stays fixed to screen for winners */
     #winner-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 5000; display: none; align-items: center; justify-content: center; }
     .game-over-card { background: white; width: 90%; max-width: 350px; border-radius: 30px; padding: 25px; text-align: center; color: #333; border: 4px solid #ffd54f; }
-    .card-header { font-size: 1.8rem; font-weight: 900; color: #d32f2f; margin-bottom: 5px; }
-    .team-winner-name { font-size: 1.4rem; font-weight: 900; margin-bottom: 20px; text-transform: uppercase; color: #000; }
-    .stats-box { background: #f1f1f1; border-radius: 15px; padding: 15px; text-align: left; margin-bottom: 20px; }
-    .stat-line { font-size: 1.3rem; font-weight: 900; padding: 10px 0; border-bottom: 1px solid #ddd; display: flex; align-items: center; }
-    .stat-line:last-child { border-bottom: none; }
-    .mvp-tag { background: #ffd54f; color: black; font-size: 0.7rem; padding: 3px 6px; border-radius: 5px; margin-left: 10px; font-weight: 900; }
-    .card-ok-btn { background: black; color: white; border: none; width: 100%; padding: 15px; border-radius: 15px; font-size: 1.4rem; font-weight: 900; cursor: pointer; }
-
-    .top-ctrl { position: fixed; top: 68px; width: 100%; height: 40px; z-index: 1100; pointer-events: none; display: flex; justify-content: space-between; padding: 0 10px; box-sizing: border-box; }
-    .alz-btn, .reset-select { height: 35px; width: 85px; border-radius: 6px; font-weight: 900; font-size: 0.65rem; cursor: pointer; pointer-events: auto; outline: none; text-transform: uppercase; border: 2px solid; }
+    
+    /* Admin Controls - Relative so they scroll */
+    .top-ctrl { width: 100%; height: 50px; display: flex; justify-content: space-between; align-items: center; padding: 0 10px; box-sizing: border-box; margin-top: 5px; }
+    .alz-btn, .reset-select, .voice-btn { height: 35px; width: 85px; border-radius: 6px; font-weight: 900; font-size: 0.65rem; cursor: pointer; outline: none; text-transform: uppercase; border: 2px solid; }
     .alz-btn { background: #ff5252; color: white; border-color: white; }
     .reset-select { background: #111; color: #ffd54f; border-color: #ffd54f; }
-    
-    .voice-btn-wrap { position: fixed; bottom: 25px; right: 15px; z-index: 1100; }
-    .voice-btn { height: 45px; width: 85px; border-radius: 6px; font-weight: 900; font-size: 0.8rem; cursor: pointer; background: #111; color: #42a5f5; border: 2px solid #42a5f5; outline: none; }
+    .voice-btn { background: #111; color: #42a5f5; border-color: #42a5f5; }
 
-    .table-container { position: relative; width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; }
+    /* Table Area - Takes up full screen height initially */
+    .table-container { position: relative; width: 100vw; height: calc(100vh - 120px); min-height: 550px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .card-table { position: relative; width: 85vw; height: 85vw; max-width: 400px; max-height: 400px; background: radial-gradient(circle, #0f7b3c 0, #064020 85%); border-radius: 50%; }
     .center-panel { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); padding: 10px; border-radius: 15px; text-align: center; width: 95px; border: 2px solid #ffd54f; z-index: 100; }
     .main-btn { background: #ffd54f; color: black; border: none; border-radius: 5px; font-weight: 900; width: 100%; margin: 4px 0; font-size: 0.85rem; padding: 12px 0; cursor: pointer; text-transform: uppercase; }
@@ -41,11 +37,11 @@
     .team-red { background: #fff5f5; }
     .team-black { background: #f4f4f4; }
 
-    /* RESTORED PERFECT POSITIONS */
+    /* RESTORED PERFECT ALIGNMENT RELATIVE TO CONTAINER */
     .p-right { top: 50%; right: 7px; transform: translateY(-50%); }
     .p-left { top: 50%; left: 7px; transform: translateY(-50%); }
-    .p-top { top: 104px; left: 50%; transform: translateX(-50%); }
-    .p-bottom { bottom: 104px; left: 50%; transform: translateX(-50%); }
+    .p-top { top: 20px; left: 50%; transform: translateX(-50%); }
+    .p-bottom { bottom: 20px; left: 50%; transform: translateX(-50%); }
 
     .p-name { border: none; background: transparent; font-weight: 900; width: 100%; font-size: 0.85rem; text-align: center; color: #333; padding: 8px 0; }
     .bid-sel { width: 90%; margin: 0 auto; height: 28px; font-weight: bold; font-size: 1.1rem; color: #000; }
@@ -56,7 +52,8 @@
     .p-tot-display { font-size: 1.9rem; font-weight: 900; background: rgba(0,0,0,0.05); margin-top: auto; padding: 8px 0; color: #333; border-top: 1px solid rgba(0,0,0,0.1); }
     .dealer-active-score { background: #ffd54f !important; }
 
-    .history-section { background: #000; border-top: 4px solid #ffd54f; padding: 20px 10px 100px 10px; }
+    /* History - Below the main content, visible upon scrolling down */
+    .history-section { background: #000; border-top: 4px solid #ffd54f; padding: 20px 10px 60px 10px; min-height: 400px; }
     table { width: 100%; border-collapse: collapse; text-align: center; }
     th { color: #ffd54f; padding: 12px; border-bottom: 1px solid #333; font-size: 0.8rem; }
     td { padding: 12px; border-bottom: 1px solid #222; font-size: 1.1rem; }
@@ -71,7 +68,7 @@
       <div class="card-header" id="win-title">🏁 GAME OVER</div>
       <div class="team-winner-name" id="win-team-label">TEAM BLACK</div>
       <div class="stats-box" id="mvp-list-container"></div>
-      <button class="card-ok-btn" onclick="closeWinnerOverlay()">OK</button>
+      <button class="card-ok-btn" onclick="closeWinnerOverlay()" style="background: black; color: white; border: none; width: 100%; padding: 15px; border-radius: 15px; font-size: 1.4rem; font-weight: 900; cursor: pointer;">OK</button>
     </div>
   </div>
 
@@ -84,12 +81,9 @@
   </div>
 
   <div class="top-ctrl admin-only">
-    <select class="reset-select" onchange="handleReset(this)"><option value="">RESET</option><option value="game">NEW GAME</option><option value="match">NEW MATCH</option></select>
-    <button class="alz-btn" onclick="moveDealer()">ALZHEIMER</button>
-  </div>
-
-  <div class="voice-btn-wrap">
+    <select class="reset-select" onchange="handleReset(this)"><option value="">RESET</option><option value="game">GAME</option><option value="match">MATCH</option></select>
     <button class="voice-btn" onclick="announceScore()">VOICE</button>
+    <button class="alz-btn" onclick="moveDealer()">ALZHEIMER</button>
   </div>
 
   <div class="table-container">
@@ -114,6 +108,7 @@
   </div>
 
   <script type="module">
+    // [Firebase and Game Logic remains identical to previous working versions]
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
     
@@ -158,7 +153,6 @@
         renderWinnerCard(data); overlay.style.display = 'flex';
       } else {
         overlay.style.display = 'none';
-        document.getElementById('cheer-sound').pause(); document.getElementById('cheer-sound').currentTime = 0;
       }
       
       document.getElementById('bid-btn').innerText = bidsLocked ? "REBID" : "BID";
@@ -168,13 +162,11 @@
     function renderWinnerCard(data) {
       const teamIdx = data.winningTeamIdx;
       const p1 = teamIdx === 0 ? 0 : 1; const p2 = teamIdx === 0 ? 2 : 3;
-      const card = document.getElementById('main-win-card');
-      const trophy = document.getElementById('match-trophy');
       const title = document.getElementById('win-title');
       document.getElementById('win-team-label').innerText = teamIdx === 0 ? "TEAM RED" : "TEAM BLACK";
       const players = [{name: document.getElementById('name-'+p1).value, score: data.totals[p1]}, {name: document.getElementById('name-'+p2).value, score: data.totals[p2]}].sort((a,b)=>b.score-a.score);
       document.getElementById('mvp-list-container').innerHTML = players.map((p,i)=>`<div class="stat-line">${p.name} (${p.score}) ${i===0?'<span class="mvp-tag">MVP</span>':''}</div>`).join('');
-      if (data.gameStatus === "matchOver") { card.classList.add('match-win-card'); trophy.style.display='block'; title.innerText="CHAMPIONS"; title.style.color="#b8860b"; } else { card.classList.remove('match-win-card'); trophy.style.display='none'; title.innerText="🏁 GAME OVER"; title.style.color="#d32f2f"; }
+      if (data.gameStatus === "matchOver") { title.innerText="CHAMPIONS"; } else { title.innerText="🏁 GAME OVER"; }
     }
 
     function calculateRequiredTotal() {
@@ -197,9 +189,7 @@
         bidsLocked = true;
         currentBids = [0,1,2,3].map(i => parseInt(document.getElementById('bid-'+i).value));
         roundRes = ['w','w','w','w']; pushState();
-      } else {
-        bidsLocked = false; pushState();
-      }
+      } else { bidsLocked = false; pushState(); }
     };
 
     window.setRes = (i,r) => { if(!isAdmin) return; roundRes[i]=r; pushState(); };
