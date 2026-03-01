@@ -41,9 +41,8 @@
     .alz-btn { background: #ff5252; color: white; border: 2px solid white; }
     .reset-select { background: #111; color: #ffd54f; border: 2px solid #ffd54f; }
     
-    .bottom-right-ctrl { position: fixed; bottom: 25px; right: 15px; z-index: 1100; display: flex; gap: 8px; }
+    .bottom-right-ctrl { position: fixed; bottom: 25px; right: 15px; z-index: 1100; }
     .voice-btn { height: 45px; width: 85px; border-radius: 6px; font-weight: 900; font-size: 0.8rem; cursor: pointer; background: #111; color: #42a5f5; border: 2px solid #42a5f5; outline: none; }
-    .mute-btn { height: 45px; width: 45px; border-radius: 6px; background: #111; border: 2px solid #ffd54f; cursor: pointer; color: #ffd54f; font-size: 1.2rem; }
 
     /* Table & Panels */
     .table-container { position: relative; width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; }
@@ -77,7 +76,7 @@
   </style>
 </head>
 <body>
-  <audio id="cheer-sound" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3" preload="auto"></audio>
+  <audio id="cheer-sound" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3" preload="auto"></audio>
 
   <div id="winner-overlay">
     <div class="game-over-card" id="main-win-card">
@@ -111,7 +110,6 @@
   </div>
 
   <div class="bottom-right-ctrl">
-    <button class="mute-btn" id="mute-toggle" onclick="toggleMute()">🔊</button>
     <button class="voice-btn" onclick="announceScore()">VOICE</button>
   </div>
 
@@ -144,12 +142,10 @@
     const app = initializeApp(firebaseConfig); const db = getDatabase(app); const stateRef = ref(db, 'github_liveGame');
     const isAdmin = new URLSearchParams(window.location.search).get('role') === 'admin';
     
-    let round=1, totals=[0,0,0,0], roundRes=[null,null,null,null], teamWins=[0,0], dealerIdx=3, history=[], bidsLocked=false, matchLimit=1, currentBids=[2,2,2,2], lastDiffs=[0,0,0,0], gameStatus=null, isMuted=false;
+    let round=1, totals=[0,0,0,0], roundRes=[null,null,null,null], teamWins=[0,0], dealerIdx=3, history=[], bidsLocked=false, matchLimit=1, currentBids=[2,2,2,2], lastDiffs=[0,0,0,0], gameStatus=null;
     const scoreMap = {2:2, 3:3, 4:4, 5:10, 6:6, 7:14, 8:16, 9:27, 10:40};
 
     if(isAdmin) document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'flex');
-
-    window.toggleMute = () => { isMuted = !isMuted; document.getElementById('mute-toggle').innerText = isMuted ? "🔈" : "🔊"; };
 
     onValue(stateRef, (snapshot) => {
       const data = snapshot.val(); if (!data) return;
@@ -159,13 +155,11 @@
       roundRes = data.roundRes || [null,null,null,null]; lastDiffs = data.lastDiffs || [0,0,0,0];
       gameStatus = data.gameStatus || null;
 
-      // Sync UI
       document.getElementById('m1').innerText = teamWins[0]; 
       document.getElementById('m2').innerText = teamWins[1]; 
       document.getElementById('match-type').value = matchLimit;
       document.getElementById('rd-info').innerText = `RD ${round} [${calculateRequiredTotal()}]`;
 
-      // Sync Players
       for(let i=0; i<4; i++) {
         document.getElementById('tot-'+i).innerText = totals[i];
         document.getElementById('tot-'+i).classList.toggle('dealer-active-score', i === dealerIdx);
@@ -179,10 +173,9 @@
         popEl.style.color = lastDiffs[i] > 0 ? "#4caf50" : "#ff5252";
       }
 
-      // GLOBAL ANNOUNCEMENT SYNC
       const overlay = document.getElementById('winner-overlay');
       if (gameStatus) {
-        if (overlay.style.display !== 'flex' && !isMuted) { document.getElementById('cheer-sound').play().catch(()=>{}); }
+        if (overlay.style.display !== 'flex') { document.getElementById('cheer-sound').play().catch(()=>{}); }
         renderWinnerCard(data);
         overlay.style.display = 'flex';
       } else {
@@ -231,10 +224,12 @@
     window.toggleBid = () => {
       if(!isAdmin) return;
       if(!bidsLocked) {
-        let sum = currentBids.reduce((a,b)=>a+b,0);
+        let sum = [0,1,2,3].reduce((acc, i) => acc + parseInt(document.getElementById('bid-'+i).value), 0);
         let req = calculateRequiredTotal();
         if(sum < req) { showWarning(`MINIMUM BID REQUIRED: ${req}`); return; }
-        bidsLocked = true; roundRes = ['w','w','w','w']; 
+        bidsLocked = true;
+        currentBids = [0,1,2,3].map(i => parseInt(document.getElementById('bid-'+i).value));
+        roundRes = ['w','w','w','w']; 
         document.getElementById('calc-btn').disabled = false; document.getElementById('calc-btn').style.opacity = "1";
       } else {
         bidsLocked = false; lastDiffs = [0,0,0,0]; roundRes = [null,null,null,null];
@@ -269,12 +264,7 @@
       currentBids = totals.map(t => getMinBidForScore(t)); pushState();
     };
 
-    window.closeWinnerOverlay = () => { 
-      if(!isAdmin) return; 
-      const endMatch = (gameStatus === "matchOver"); gameStatus = null;
-      if(endMatch) manualHardReset(); else manualReset();
-    };
-
+    window.closeWinnerOverlay = () => { if(!isAdmin) return; const endMatch = (gameStatus === "matchOver"); gameStatus = null; if(endMatch) manualHardReset(); else manualReset(); };
     window.manualReset = () => { round=1; totals=[0,0,0,0]; history=[]; bidsLocked=false; roundRes=[null,null,null,null]; lastDiffs=[0,0,0,0]; currentBids = [2,2,2,2]; pushState(); };
     window.manualHardReset = () => { teamWins=[0,0]; manualReset(); };
     window.showWarning = (msg) => { document.getElementById('warning-msg').innerText = msg; document.getElementById('warning-overlay').style.display = 'flex'; };
@@ -283,6 +273,14 @@
     window.moveDealer = () => { if(isAdmin) { dealerIdx = (dealerIdx+1)%4; pushState(); } };
     const renderHistory = () => { const hb = document.getElementById('hist-body'); hb.innerHTML = ""; history.slice().reverse().forEach(row => hb.innerHTML += `<tr><td>${row.rd}</td><td>${row.s[0]}</td><td>${row.s[1]}</td><td>${row.s[2]}</td><td>${row.s[3]}</td></tr>`); };
     const pushState = (extra = {}) => { if(isAdmin) set(stateRef, { round, totals, teamWins, dealerIdx, history, matchLimit, bidsLocked, currentBids, roundRes, lastDiffs, gameStatus, ...extra }); };
+    
+    window.announceScore = () => {
+      const p = [0,1,2,3].map(i => ({ name: document.getElementById(`name-${i}`).value.toUpperCase() === "WAEL" ? "Wah El" : document.getElementById(`name-${i}`).value, score: totals[i] }));
+      const phrases = [`BLACK TEAM: ${p[1].name} ${p[1].score}, ${p[3].name} ${p[3].score}`, `RED TEAM: ${p[0].name} ${p[0].score}, ${p[2].name} ${p[2].score}`];
+      let i = 0;
+      function speak() { if (i < phrases.length) { const m = new SpeechSynthesisUtterance(phrases[i]); m.rate = 0.85; m.onend = () => { i++; setTimeout(speak, 1000); }; window.speechSynthesis.speak(m); } }
+      window.speechSynthesis.cancel(); speak();
+    };
   </script>
 </body>
 </html>
