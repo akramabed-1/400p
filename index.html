@@ -13,19 +13,15 @@
     .match-type-select { background: transparent; color: #ffd54f; border: none; font-weight: 900; font-size: 0.9rem; outline: none; cursor: pointer; text-align: center; -webkit-appearance: none; }
     .admin-only { display: none; }
     
-    /* Invalid Warning Style */
     #warning-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
     .warning-text { font-size: 3.5rem; font-weight: 900; color: #ff5252; margin: 0; text-transform: uppercase; }
-    .warning-subtext { color: white; font-size: 1.2rem; margin: 10px 0 30px 0; font-weight: bold; }
 
-    /* OVERLAY STYLES */
-    #winner-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 5000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+    #winner-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 5000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
     .game-over-card { background: white; width: 90%; max-width: 340px; border-radius: 25px; padding: 30px 20px; text-align: center; color: #333; box-shadow: 0 10px 50px rgba(0,0,0,0.8); border: 4px solid #ffd54f; }
-    .card-title { font-size: 2rem; font-weight: 900; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+    .card-title { font-size: 2rem; font-weight: 900; margin: 0; text-transform: uppercase; }
     .winning-team-name { font-size: 1.5rem; font-weight: 900; margin: 10px 0 20px 0; text-transform: uppercase; color: #000; }
     .mvp-list { background: #f4f4f4; border-radius: 15px; padding: 15px; text-align: left; margin-bottom: 25px; }
     .player-row { font-size: 1.2rem; font-weight: 900; padding: 10px 0; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; }
-    .player-row:last-child { border-bottom: none; }
     .mvp-badge { background: #ffd54f; color: #000; font-size: 0.75rem; padding: 4px 8px; border-radius: 6px; margin-left: 8px; animation: pulse 1.5s infinite; }
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
     .ok-btn { background: #000; color: #fff; border: none; width: 100%; padding: 15px; border-radius: 12px; font-size: 1.3rem; font-weight: 900; cursor: pointer; }
@@ -41,7 +37,7 @@
     .table-container { position: relative; width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .card-table { position: relative; width: 85vw; height: 85vw; max-width: 400px; max-height: 400px; background: radial-gradient(circle, #0f7b3c 0, #064020 85%); border-radius: 50%; }
     .center-panel { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); padding: 10px; border-radius: 15px; text-align: center; width: 95px; border: 2px solid #ffd54f; z-index: 100; }
-    .main-btn { background: #ffd54f; color: black; border: none; border-radius: 5px; font-weight: 900; width: 100%; margin: 4px 0; font-size: 0.85rem; padding: 12px 0; cursor: pointer; text-transform: uppercase; display: flex; align-items: center; justify-content: center; line-height: 1; }
+    .main-btn { background: #ffd54f; color: black; border: none; border-radius: 5px; font-weight: 900; width: 100%; margin: 4px 0; font-size: 0.85rem; padding: 12px 0; cursor: pointer; text-transform: uppercase; display: flex; align-items: center; justify-content: center; line-height: 1; text-align: center;}
 
     .player-panel { position: absolute; border-radius: 12px; width: 120px; height: 180px; text-align: center; display: flex; flex-direction: column; box-shadow: 0 6px 15px rgba(0,0,0,0.5); z-index: 200; border: 1px solid #ccc; overflow: hidden; }
     .team-red { background: #fff5f5; }
@@ -56,7 +52,7 @@
     .res-group { display: flex; justify-content: center; gap: 6px; margin: 4px 0; }
     .res-btn { width: 40px; height: 40px; border-radius: 6px; font-weight: 900; border: 1px solid #ccc; background: #fff; cursor: pointer; color: #333; }
     .win-active { background: #2e7d32 !important; color: white !important; border-color: #2e7d32 !important; }
-    .loss-active { background: #d32f2f !important; color: white !important; border-color: #2e7d32 !important; }
+    .loss-active { background: #d32f2f !important; color: white !important; border-color: #d32f2f !important; }
     .p-tot-display { font-size: 1.9rem; font-weight: 900; background: rgba(0,0,0,0.05); margin-top: auto; padding: 8px 0; border-radius: 0 0 12px 12px; color: #333; border-top: 1px solid rgba(0,0,0,0.1); }
     .dealer-active-score { background: #ffd54f !important; color: #000 !important; }
 
@@ -69,7 +65,7 @@
 <body>
   <div id="warning-overlay">
     <h1 class="warning-text">INVALID!</h1>
-    <p id="warning-msg" class="warning-subtext">MINIMUM BID REQUIRED: 11</p>
+    <p id="warning-msg" class="warning-subtext" style="color:white;font-weight:bold;"></p>
     <button class="ok-btn" style="width:160px" onclick="closeWarning()">OK</button>
   </div>
 
@@ -140,21 +136,25 @@
 
     onValue(stateRef, (snapshot) => {
       const data = snapshot.val(); if (!data) return;
-      round = data.round; totals = data.totals; teamWins = data.teamWins; dealerIdx = data.dealerIdx; 
-      history = data.history || []; matchLimit = data.matchLimit || 1; 
-      bidsLocked = data.bidsLocked || false; currentBids = data.currentBids || [2,2,2,2];
-      roundRes = data.roundRes || [null,null,null,null]; lastDiffs = data.lastDiffs || [0,0,0,0];
-      gameWinner = data.gameWinner; matchWinner = data.matchWinner; playerGameWins = data.playerGameWins || [0,0,0,0];
+      round = data.round; totals = data.totals; teamWins = data.teamWins; 
+      dealerIdx = data.dealerIdx; history = data.history || []; matchLimit = data.matchLimit; 
+      bidsLocked = data.bidsLocked; currentBids = data.currentBids;
+      roundRes = data.roundRes; lastDiffs = data.lastDiffs;
+      gameWinner = data.gameWinner; matchWinner = data.matchWinner; 
+      playerGameWins = data.playerGameWins;
 
       document.getElementById('m1').innerText = teamWins[0]; 
       document.getElementById('m2').innerText = teamWins[1]; 
       document.getElementById('match-type').value = matchLimit;
       document.getElementById('rd-info').innerText = `RD ${round} [${calculateRequiredTotal()}]`;
       
-      // Update names and table headers
+      const nextBtn = document.getElementById('next-btn');
+      if (matchWinner !== null) { nextBtn.innerText = "NEXT MATCH"; nextBtn.style.background = "#ffd54f"; }
+      else if (gameWinner !== null) { nextBtn.innerText = "NEXT GAME"; nextBtn.style.background = "#ffd54f"; }
+      else { nextBtn.innerText = "NEXT"; nextBtn.style.background = "#ffd54f"; }
+
       for(let i=0; i<4; i++) {
-        const nameVal = document.getElementById('name-'+i).value;
-        document.getElementById('th-'+i).innerText = nameVal.substring(0,3).toUpperCase();
+        document.getElementById('th-'+i).innerText = document.getElementById('name-'+i).value.substring(0,3).toUpperCase();
         document.getElementById('tot-'+i).innerText = totals[i];
         document.getElementById('tot-'+i).classList.toggle('dealer-active-score', i === dealerIdx);
         updateDropdownOptions(i);
@@ -167,17 +167,20 @@
         else { popEl.innerText = ""; }
       }
 
-      // Sync Overlay for Spectators
-      if (matchWinner !== null) {
-        showOverlayUI(matchWinner, true);
-      } else if (gameWinner !== null) {
-        showOverlayUI(gameWinner, false);
+      if (matchWinner !== null || gameWinner !== null) {
+        // Only show overlay if it hasn't been manually dismissed (check local variable logic later if needed)
+        // For simplicity, we assume if winner exists in DB, we show it unless dismissed.
+        // We'll use a local 'dismissed' check to handle the "OK" click.
+      }
+      
+      // If winners are in DB and not localy dismissed, show overlay
+      if((gameWinner !== null || matchWinner !== null) && !window.overlayDismissed) {
+         showOverlayUI(matchWinner !== null ? matchWinner : gameWinner, matchWinner !== null);
       } else {
-        document.getElementById('winner-overlay').style.display = 'none';
+         document.getElementById('winner-overlay').style.display = 'none';
       }
 
       document.getElementById('bid-btn').innerText = bidsLocked ? "REBID" : "BID";
-      document.getElementById('overlay-close-btn').style.display = isAdmin ? 'block' : 'none';
       renderHistory();
     });
 
@@ -193,31 +196,23 @@
       for(let j=start; j<=10; j++){ let o = document.createElement('option'); o.value=j; o.innerText=j; s.appendChild(o); }
     }
 
-    // THE CORE OVERLAY UI LOGIC
     function showOverlayUI(teamIdx, isMatch) {
       const pIdx = teamIdx === 0 ? [0, 2] : [1, 3];
       const container = document.getElementById('mvp-list-container');
       const titleEl = document.getElementById('overlay-title');
       container.innerHTML = "";
-
       if (isMatch) {
-        titleEl.innerHTML = "🏆 MATCH CHAMPIONS";
-        titleEl.style.color = "#ffd54f";
+        titleEl.innerHTML = "🏆 MATCH CHAMPIONS"; titleEl.style.color = "#ffd54f";
         document.getElementById('win-team-label').innerText = teamIdx === 0 ? "TEAM RED DOMINATION" : "TEAM BLACK DOMINATION";
-        
-        // Match MVP logic: game wins
         let players = pIdx.map(i => ({ name: document.getElementById('name-'+i).value, val: playerGameWins[i] }));
         let maxWins = Math.max(...players.map(p => p.val));
         players.forEach(p => {
-            const tag = p.val === maxWins ? '<span class="mvp-badge">MATCH MVP</span>' : '';
+            const tag = (p.val === maxWins && p.val > 0) ? '<span class="mvp-badge">MATCH MVP</span>' : '';
             container.innerHTML += `<div class="player-row"><span>${p.name} (${p.val} Wins)${tag}</span></div>`;
         });
       } else {
-        titleEl.innerHTML = "🏁 GAME OVER";
-        titleEl.style.color = "#d32f2f";
+        titleEl.innerHTML = "🏁 GAME OVER"; titleEl.style.color = "#d32f2f";
         document.getElementById('win-team-label').innerText = teamIdx === 0 ? "TEAM RED" : "TEAM BLACK";
-        
-        // Game MVP logic: high score
         let players = pIdx.map(i => ({ name: document.getElementById('name-'+i).value, val: totals[i] }));
         let maxScore = Math.max(...players.map(p => p.val));
         players.forEach(p => {
@@ -230,38 +225,46 @@
 
     window.handleNextClick = () => {
       if(!isAdmin) return;
-      for(let i=0; i<4; i++) totals[i] += lastDiffs[i];
-      history.push({rd: round, s: [...totals]});
+      
+      // Part 2: If we are already in a Win state and button is clicked again
+      if (matchWinner !== null) { manualHardReset(); window.overlayDismissed = false; pushState(); return; }
+      if (gameWinner !== null) { manualReset(); window.overlayDismissed = false; pushState(); return; }
+
+      // Part 1: Standard Scoring
+      let tempTotals = [...totals];
+      for(let i=0; i<4; i++) tempTotals[i] += lastDiffs[i];
+      history.push({rd: round, s: [...tempTotals]});
+      totals = [...tempTotals];
 
       let winT1 = ((totals[0] >= 41 && totals[2] >= 0) || (totals[2] >= 41 && totals[0] >= 0));
       let winT2 = ((totals[1] >= 41 && totals[3] >= 0) || (totals[3] >= 41 && totals[1] >= 0));
 
       if(winT1 || winT2) {
         let winIdx = (winT1 && winT2) ? (Math.max(totals[0], totals[2]) > Math.max(totals[1], totals[3]) ? 0 : 1) : (winT1 ? 0 : 1);
-        
-        // Track individual wins for Match MVP
         const pIdx = winIdx === 0 ? [0, 2] : [1, 3];
         const topInTeam = totals[pIdx[0]] >= totals[pIdx[1]] ? pIdx[0] : pIdx[1];
         playerGameWins[topInTeam]++;
-        if(totals[pIdx[0]] === totals[pIdx[1]]) playerGameWins[pIdx[1]]++; // Shared win if scores equal
-
+        if(totals[pIdx[0]] === totals[pIdx[1]]) playerGameWins[pIdx[1]]++; 
         teamWins[winIdx]++;
         gameWinner = winIdx;
         if(teamWins[winIdx] >= Math.ceil(matchLimit/2)) matchWinner = winIdx;
+        window.overlayDismissed = false; // Trigger overlay reveal
       } else {
         round++; dealerIdx = (dealerIdx + 1) % 4; bidsLocked = false; roundRes = [null,null,null,null]; lastDiffs = [0,0,0,0];
         currentBids = totals.map(t => getMinBidForScore(t));
+        document.getElementById('next-btn').disabled = true; document.getElementById('next-btn').style.opacity = "0.4";
+        document.getElementById('calc-btn').disabled = true; document.getElementById('calc-btn').style.opacity = "0.4";
       }
       pushState();
     };
 
-    window.closeWinnerOverlay = () => {
-      if(!isAdmin) return;
-      if(matchWinner !== null) { manualHardReset(); } else { manualReset(); }
-      gameWinner = null; matchWinner = null; pushState();
+    window.closeWinnerOverlay = () => { 
+      // Just hide it locally and in DB so spectators see the panels
+      window.overlayDismissed = true; 
+      document.getElementById('winner-overlay').style.display = 'none';
+      // We don't null the winner in DB yet, because the NEXT button needs to know which state it's in.
     };
 
-    // Standard Controls
     window.toggleBid = () => {
       if(!isAdmin) return;
       if(!bidsLocked) {
@@ -289,7 +292,7 @@
       pushState();
     };
 
-    window.manualReset = () => { round=1; totals=[0,0,0,0]; history=[]; bidsLocked=false; roundRes=[null,null,null,null]; lastDiffs=[0,0,0,0]; currentBids = totals.map(t => getMinBidForScore(t)); };
+    window.manualReset = () => { round=1; totals=[0,0,0,0]; history=[]; bidsLocked=false; roundRes=[null,null,null,null]; lastDiffs=[0,0,0,0]; currentBids = [2,2,2,2]; gameWinner=null; matchWinner=null; document.getElementById('next-btn').disabled = true; document.getElementById('next-btn').style.opacity = "0.4"; };
     window.manualHardReset = () => { teamWins=[0,0]; playerGameWins=[0,0,0,0]; manualReset(); };
     window.handleReset = (sel) => { if(isAdmin && sel.value) { if(sel.value==='game' && confirm("Reset Game?")) manualReset(); if(sel.value==='match' && confirm("Wipe Match?")) manualHardReset(); sel.value=""; pushState(); } };
     window.moveDealer = () => { if(isAdmin) { dealerIdx = (dealerIdx+1)%4; pushState(); } };
