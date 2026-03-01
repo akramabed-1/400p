@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>400 PRO - ELITE EDITION</title>
   <style>
+    /* Natural scrolling flow */
     body { margin: 0; padding: 0; background: #0b5b2e; font-family: sans-serif; color: white; overflow-x: hidden; display: flex; flex-direction: column; }
     
     #match-header { width: 100%; background: #064020; border-bottom: 3px solid #ffd54f; display: flex; justify-content: space-between; align-items: center; z-index: 1000; height: 60px; padding: 0 15px; box-sizing: border-box; flex-shrink: 0; }
@@ -17,26 +18,29 @@
     .alz-btn { background: #ff5252; color: white; border-color: white; }
     .reset-select { background: #111; color: #ffd54f; border-color: #ffd54f; }
 
-    /* Voice Icon - Bottom Right */
-    .voice-btn-container { width: 100%; padding: 0 10px; box-sizing: border-box; display: flex; justify-content: flex-end; margin-top: -10px; z-index: 1100; }
-    .voice-btn-circle { width: 45px; height: 45px; border-radius: 50%; background: #111; border: 2px solid #42a5f5; color: #42a5f5; font-size: 1.5rem; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-
-    .table-container { position: relative; width: 100vw; height: 100vh; min-height: 600px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-    .card-table { position: relative; width: 85vw; height: 85vw; max-width: 400px; max-height: 400px; background: radial-gradient(circle, #0f7b3c 0, #064020 85%); border-radius: 50%; }
+    /* The Main Table Area - Exactly 100% of the first view */
+    .table-container { position: relative; width: 100vw; height: calc(100vh - 120px); min-height: 580px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .card-table { position: relative; width: 85vw; height: 85vw; max-width: 400px; max-height: 400px; background: radial-gradient(circle, #0f7b3c 0, #064020 85%); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
     
-    /* Maximized Central Panel */
-    .center-panel { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.92); padding: 15px 10px; border-radius: 15px; text-align: center; width: 110px; height: 160px; border: 2.5px solid #ffd54f; z-index: 100; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; }
+    /* Central Panel - Height adjusted to fill space without breaking buttons */
+    .center-panel { background: rgba(0,0,0,0.92); padding: 10px; border-radius: 15px; text-align: center; width: 110px; height: 180px; border: 2.5px solid #ffd54f; z-index: 100; display: flex; flex-direction: column; justify-content: space-evenly; box-sizing: border-box; }
     
-    .main-btn { background: #ffd54f; color: black; border: none; border-radius: 6px; font-weight: 900; width: 100%; font-size: 0.9rem; height: 42px; display: flex; align-items: center; justify-content: center; cursor: pointer; text-transform: uppercase; }
+    /* Centered Text Buttons */
+    .main-btn { background: #ffd54f; color: black; border: none; border-radius: 6px; font-weight: 900; width: 100%; font-size: 0.9rem; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; text-transform: uppercase; }
 
     .player-panel { position: absolute; border-radius: 12px; width: 120px; height: 180px; text-align: center; display: flex; flex-direction: column; box-shadow: 0 6px 15px rgba(0,0,0,0.5); z-index: 200; border: 1px solid #ccc; overflow: hidden; }
     .team-red { background: #fff5f5; }
     .team-black { background: #f4f4f4; }
 
+    /* Alignment constants preserved */
     .p-right { top: 50%; right: 7px; transform: translateY(-50%); }
     .p-left { top: 50%; left: 7px; transform: translateY(-50%); }
-    .p-top { top: 104px; left: 50%; transform: translateX(-50%); }
-    .p-bottom { bottom: 104px; left: 50%; transform: translateX(-50%); }
+    .p-top { top: 10px; left: 50%; transform: translateX(-50%); }
+    .p-bottom { bottom: 10px; left: 50%; transform: translateX(-50%); }
+
+    /* Voice Button - Bottom Right of the first screen section */
+    .voice-btn-container { width: 100%; padding: 10px 20px; box-sizing: border-box; display: flex; justify-content: flex-end; flex-shrink: 0; }
+    .voice-btn-circle { width: 50px; height: 50px; border-radius: 50%; background: #111; border: 2px solid #42a5f5; color: #42a5f5; font-size: 1.6rem; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
 
     .p-name { border: none; background: transparent; font-weight: 900; width: 100%; font-size: 0.85rem; text-align: center; color: #333; padding: 8px 0; }
     .p-tot-display { font-size: 1.9rem; font-weight: 900; background: rgba(0,0,0,0.05); margin-top: auto; padding: 8px 0; color: #333; border-top: 1px solid rgba(0,0,0,0.1); }
@@ -50,17 +54,12 @@
     th { color: #ffd54f; padding: 12px; border-bottom: 1px solid #333; font-size: 0.8rem; }
     td { padding: 12px; border-bottom: 1px solid #222; font-size: 1.1rem; }
     .admin-only { display: none; }
-
-    #winner-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 5000; display: none; align-items: center; justify-content: center; }
-    .game-over-card { background: white; width: 90%; max-width: 350px; border-radius: 30px; padding: 25px; text-align: center; color: #333; border: 4px solid #ffd54f; }
   </style>
 </head>
 <body>
-  <audio id="cheer-sound" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3" preload="auto"></audio>
-
   <div id="match-header">
     <div style="display:flex; align-items:center; gap:5px;"><span style="color:#ffd54f;font-weight:900">RED</span><div class="score-box bg-red" id="m1">0</div></div>
-    <select id="match-type" onchange="changeMatchType(this.value)" style="background:transparent; color:#ffd54f; border:none; font-weight:900; font-size:0.9rem; outline:none;">
+    <select id="match-type" onchange="changeMatchType(this.value)" style="background:transparent; color:#ffd54f; border:none; font-weight:900; font-size:0.9rem; outline:none; -webkit-appearance: none;">
       <option value="1">SINGLE</option><option value="3">BO3</option><option value="5">BO5</option>
     </select>
     <div style="display:flex; align-items:center; gap:5px;"><div class="score-box bg-black" id="m2">0</div><span style="color:#ffd54f;font-weight:900">BLACK</span></div>
@@ -96,135 +95,48 @@
     <table><thead><tr><th>RD</th><th>MOH</th><th>AME</th><th>WAE</th><th>AKR</th></tr></thead><tbody id="hist-body"></tbody></table>
   </div>
 
-  <div id="winner-overlay">
-    <div class="game-over-card">
-      <div id="win-title" style="font-size:1.8rem; font-weight:900; color:#d32f2f;">🏁 GAME OVER</div>
-      <div id="win-team-label" style="font-weight:900; margin-bottom:15px; font-size:1.4rem;"></div>
-      <div id="mvp-list-container" style="text-align:left; background:#f1f1f1; padding:10px; border-radius:10px;"></div>
-      <button onclick="closeWinnerOverlay()" style="width:100%; padding:15px; background:black; color:white; border-radius:10px; font-weight:900; margin-top:15px;">OK</button>
-    </div>
-  </div>
-
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-    
     const firebaseConfig = { apiKey: "AIzaSyC9bc2wY9HkQW9k5Ln-ha7hm0IQr_nHX7s", authDomain: "score-400-33dc7.firebaseapp.com", databaseURL: "https://score-400-33dc7-default-rtdb.europe-west1.firebasedatabase.app", projectId: "score-400-33dc7" };
     const app = initializeApp(firebaseConfig); const db = getDatabase(app); const stateRef = ref(db, 'github_liveGame');
     const isAdmin = new URLSearchParams(window.location.search).get('role') === 'admin';
-    
+    if(isAdmin) document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'flex');
+
     let round=1, totals=[0,0,0,0], roundRes=[null,null,null,null], teamWins=[0,0], dealerIdx=3, history=[], bidsLocked=false, matchLimit=1, currentBids=[2,2,2,2], lastDiffs=[0,0,0,0], gameStatus=null;
     const scoreMap = {2:2, 3:3, 4:4, 5:10, 6:6, 7:14, 8:16, 9:27, 10:40};
 
-    if(isAdmin) document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'flex');
-
     onValue(stateRef, (snapshot) => {
       const data = snapshot.val(); if (!data) return;
-      round = data.round; totals = data.totals; teamWins = data.teamWins; dealerIdx = data.dealerIdx; 
-      history = data.history || []; matchLimit = data.matchLimit || 1; 
-      bidsLocked = data.bidsLocked || false; currentBids = data.currentBids || [2,2,2,2];
-      roundRes = data.roundRes || [null,null,null,null]; lastDiffs = data.lastDiffs || [0,0,0,0];
-      gameStatus = data.gameStatus || null;
+      round=data.round; totals=data.totals; teamWins=data.teamWins; dealerIdx=data.dealerIdx; history=data.history||[]; bidsLocked=data.bidsLocked||false; currentBids=data.currentBids||[2,2,2,2]; roundRes=data.roundRes||[null,null,null,null]; lastDiffs=data.lastDiffs||[0,0,0,0]; matchLimit=data.matchLimit||1;
 
-      document.getElementById('m1').innerText = teamWins[0]; 
-      document.getElementById('m2').innerText = teamWins[1]; 
-      document.getElementById('match-type').value = matchLimit;
-      document.getElementById('rd-info').innerText = `RD ${round} [${calculateRequiredTotal()}]`;
-
-      for(let i=0; i<4; i++) {
-        document.getElementById('tot-'+i).innerText = totals[i];
-        document.getElementById('tot-'+i).classList.toggle('dealer-active-score', i === dealerIdx);
-        updateDropdownOptions(i);
-        document.getElementById('bid-'+i).value = currentBids[i];
-        document.getElementById('bid-'+i).disabled = !isAdmin || bidsLocked;
-        document.getElementById('w-'+i).className = 'res-btn' + (roundRes[i] === 'w' ? ' win-active' : '');
-        document.getElementById('l-'+i).className = 'res-btn' + (roundRes[i] === 'l' ? ' loss-active' : '');
-        const popEl = document.getElementById('pop-'+i);
-        popEl.innerText = lastDiffs[i] !== 0 ? (lastDiffs[i] > 0 ? "+" : "") + lastDiffs[i] : "";
-        popEl.style.color = lastDiffs[i] > 0 ? "#4caf50" : "#ff5252";
+      document.getElementById('m1').innerText=teamWins[0]; document.getElementById('m2').innerText=teamWins[1];
+      document.getElementById('rd-info').innerText=`RD ${round} [${calculateRequiredTotal()}]`;
+      for(let i=0; i<4; i++){
+        document.getElementById('tot-'+i).innerText=totals[i];
+        document.getElementById('tot-'+i).classList.toggle('dealer-active-score', i===dealerIdx);
+        updateDropdown(i); document.getElementById('bid-'+i).value=currentBids[i];
+        document.getElementById('bid-'+i).disabled=!isAdmin||bidsLocked;
+        document.getElementById('w-'+i).className='res-btn'+(roundRes[i]==='w'?' win-active':'');
+        document.getElementById('l-'+i).className='res-btn'+(roundRes[i]==='l'?' loss-active':'');
+        const pop=document.getElementById('pop-'+i); pop.innerText=lastDiffs[i]!==0?(lastDiffs[i]>0?"+":"")+lastDiffs[i]:"";
       }
-
-      const overlay = document.getElementById('winner-overlay');
-      if (gameStatus) {
-        if (overlay.style.display !== 'flex') { document.getElementById('cheer-sound').play().catch(()=>{}); }
-        document.getElementById('win-team-label').innerText = data.winningTeamIdx === 0 ? "TEAM RED" : "TEAM BLACK";
-        overlay.style.display = 'flex';
-      } else { overlay.style.display = 'none'; }
-      
-      document.getElementById('bid-btn').innerText = bidsLocked ? "REBID" : "BID";
-      document.getElementById('calc-btn').disabled = !bidsLocked;
-      document.getElementById('calc-btn').style.opacity = bidsLocked ? "1" : "0.4";
+      document.getElementById('bid-btn').innerText=bidsLocked?"REBID":"BID";
+      document.getElementById('calc-btn').disabled=!bidsLocked; document.getElementById('calc-btn').style.opacity=bidsLocked?"1":"0.4";
       renderHistory();
     });
 
-    function calculateRequiredTotal() {
-        let req = 11;
-        for(let i=0; i<4; i++) { if(totals[i] >= 40) req = 13; else if(totals[i] >= 30 && req < 13) req = 12; }
-        return req;
-    }
-    function getMinBidForScore(score) { if (score >= 40) return 4; if (score >= 30) return 3; return 2; }
-    function updateDropdownOptions(i) {
-      const s = document.getElementById('bid-'+i); s.innerHTML = '';
-      for(let j=getMinBidForScore(totals[i]); j<=10; j++){ let o = document.createElement('option'); o.value=j; o.innerText=j; s.appendChild(o); }
-    }
-
-    window.toggleBid = () => {
-      if(!isAdmin) return;
-      if(!bidsLocked) {
-        let sum = [0,1,2,3].reduce((acc, i) => acc + parseInt(document.getElementById('bid-'+i).value), 0);
-        let req = calculateRequiredTotal();
-        if(sum < req) { alert(`MINIMUM BID REQUIRED: ${req}`); return; }
-        bidsLocked = true;
-        currentBids = [0,1,2,3].map(i => parseInt(document.getElementById('bid-'+i).value));
-        roundRes = ['w','w','w','w']; pushState();
-      } else { bidsLocked = false; pushState(); }
-    };
-
-    window.setRes = (i,r) => { if(!isAdmin) return; roundRes[i]=r; pushState(); };
-    window.doCalc = () => {
-      if(!isAdmin) return;
-      lastDiffs = [0,1,2,3].map(i => {
-        let b = currentBids[i]; let s = (totals[i] < 30) ? (scoreMap[b] || b) : b;
-        return (roundRes[i] === 'w') ? s : -s;
-      });
-      document.getElementById('next-btn').disabled = false; document.getElementById('next-btn').style.opacity = "1";
-      pushState();
-    };
-
-    window.handleNextClick = () => {
-      if(!isAdmin) return;
-      for(let i=0; i<4; i++) totals[i] += lastDiffs[i];
-      history.push({rd: round, s: [...totals]});
-      let winT1 = ((totals[0] >= 41 && totals[2] >= 0) || (totals[2] >= 41 && totals[0] >= 0));
-      let winT2 = ((totals[1] >= 41 && totals[3] >= 0) || (totals[3] >= 41 && totals[1] >= 0));
-      if(winT1 || winT2) {
-        let winningTeamIdx = (winT1 && winT2) ? (Math.max(totals[0], totals[2]) > Math.max(totals[1], totals[3]) ? 0 : 1) : (winT1 ? 0 : 1);
-        teamWins[winningTeamIdx]++;
-        gameStatus = (teamWins[winningTeamIdx] >= Math.ceil(matchLimit/2)) ? "matchOver" : "gameOver";
-        pushState({ winningTeamIdx }); return;
-      }
-      round++; dealerIdx = (dealerIdx + 1) % 4; bidsLocked = false; roundRes = [null,null,null,null]; lastDiffs = [0,0,0,0];
-      currentBids = totals.map(t => getMinBidForScore(t));
-      document.getElementById('next-btn').disabled = true; document.getElementById('next-btn').style.opacity = "0.4";
-      pushState();
-    };
-
-    window.closeWinnerOverlay = () => { if(!isAdmin) return; const endMatch = (gameStatus === "matchOver"); gameStatus = null; if(endMatch) manualHardReset(); else manualReset(); };
-    window.manualReset = () => { round=1; totals=[0,0,0,0]; history=[]; bidsLocked=false; roundRes=[null,null,null,null]; lastDiffs=[0,0,0,0]; currentBids = [2,2,2,2]; pushState(); };
-    window.manualHardReset = () => { teamWins=[0,0]; manualReset(); };
-    window.handleReset = (sel) => { if(isAdmin && sel.value) { if(confirm("Reset?")) sel.value==='game'?manualReset():manualHardReset(); sel.value=""; } };
-    window.moveDealer = () => { if(isAdmin) { dealerIdx = (dealerIdx+1)%4; pushState(); } };
-    const renderHistory = () => { const hb = document.getElementById('hist-body'); hb.innerHTML = ""; history.slice().reverse().forEach(row => hb.innerHTML += `<tr><td>${row.rd}</td><td>${row.s[0]}</td><td>${row.s[1]}</td><td>${row.s[2]}</td><td>${row.s[3]}</td></tr>`); };
-    const pushState = (extra = {}) => { if(isAdmin) set(stateRef, { round, totals, teamWins, dealerIdx, history, matchLimit, bidsLocked, currentBids, roundRes, lastDiffs, gameStatus, ...extra }); };
-    
-    window.announceScore = () => {
-      const p = [0,1,2,3].map(i => ({ name: document.getElementById(`name-${i}`).value.toUpperCase() === "WAEL" ? "Wah El" : document.getElementById(`name-${i}`).value, score: totals[i] }));
-      const phrases = [`BLACK TEAM: ${p[1].name} ${p[1].score}, ${p[3].name} ${p[3].score}`, `RED TEAM: ${p[0].name} ${p[0].score}, ${p[2].name} ${p[2].score}`];
-      let i = 0;
-      function speak() { if (i < phrases.length) { const m = new SpeechSynthesisUtterance(phrases[i]); m.rate = 0.85; m.onend = () => { i++; setTimeout(speak, 1000); }; window.speechSynthesis.speak(m); } }
-      window.speechSynthesis.cancel(); speak();
-    };
-    window.changeMatchType = (v) => { if(isAdmin) { matchLimit = parseInt(v); pushState(); } };
+    function calculateRequiredTotal(){ let r=11; for(let i=0;i<4;i++){ if(totals[i]>=40)r=13;else if(totals[i]>=30&&r<13)r=12; } return r; }
+    function updateDropdown(i){ const s=document.getElementById('bid-'+i); s.innerHTML=''; let min=totals[i]>=40?4:totals[i]>=30?3:2; for(let j=min;j<=10;j++){ let o=document.createElement('option'); o.value=j; o.innerText=j; s.appendChild(o); } }
+    window.setRes=(i,r)=>{ if(isAdmin){roundRes[i]=r; pushState();}};
+    window.toggleBid=()=>{ if(!isAdmin)return; if(!bidsLocked){ let sum=0; for(let i=0;i<4;i++)sum+=parseInt(document.getElementById('bid-'+i).value); if(sum<calculateRequiredTotal()){alert("Check bids!"); return;} bidsLocked=true; currentBids=[0,1,2,3].map(i=>parseInt(document.getElementById('bid-'+i).value)); roundRes=['w','w','w','w']; } else { bidsLocked=false; } pushState(); };
+    window.doCalc=()=>{ if(!isAdmin)return; lastDiffs=currentBids.map((b,i)=>{ let s=(totals[i]<30)?(scoreMap[b]||b):b; return roundRes[i]==='w'?s:-s; }); document.getElementById('next-btn').disabled=false; document.getElementById('next-btn').style.opacity="1"; pushState(); };
+    window.handleNextClick=()=>{ if(!isAdmin)return; for(let i=0;i<4;i++)totals[i]+=lastDiffs[i]; history.push({rd:round, s:[...totals]}); round++; dealerIdx=(dealerIdx+1)%4; bidsLocked=false; roundRes=[null,null,null,null]; lastDiffs=[0,0,0,0]; document.getElementById('next-btn').disabled=true; document.getElementById('next-btn').style.opacity="0.4"; pushState(); };
+    window.moveDealer=()=>{ if(isAdmin){dealerIdx=(dealerIdx+1)%4; pushState();} };
+    window.handleReset=(s)=>{ if(isAdmin&&s.value&&confirm("Reset?")){ if(s.value==='game'){round=1;totals=[0,0,0,0];history=[];}else{teamWins=[0,0];round=1;totals=[0,0,0,0];history=[];} pushState(); s.value=""; } };
+    const pushState=(e={})=>set(stateRef,{round,totals,teamWins,dealerIdx,history,matchLimit,bidsLocked,currentBids,roundRes,lastDiffs,...e});
+    const renderHistory=()=>{ const hb=document.getElementById('hist-body'); hb.innerHTML=""; history.slice().reverse().forEach(r=>hb.innerHTML+=`<tr><td>${r.rd}</td><td>${r.s[0]}</td><td>${r.s[1]}</td><td>${r.s[2]}</td><td>${r.s[3]}</td></tr>`); };
+    window.announceScore=()=>{ const p=[0,1,2,3].map(i=>({n:document.getElementById('name-'+i).value, s:totals[i]})); const txt=`Score is: Red Team ${p[0].s} and ${p[2].s}. Black Team ${p[1].s} and ${p[3].s}`; const u=new SpeechSynthesisUtterance(txt); window.speechSynthesis.speak(u); };
   </script>
 </body>
 </html>
