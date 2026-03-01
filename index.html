@@ -29,8 +29,6 @@
     .player-panel { position: absolute; background: white; border-radius: 12px; width: 120px; height: 180px; text-align: center; display: flex; flex-direction: column; box-shadow: 0 6px 15px rgba(0,0,0,0.5); z-index: 200; border: 1px solid #ccc; overflow: hidden; }
     .p-right { top: 50%; right: 10px; transform: translateY(-50%); }
     .p-left { top: 50%; left: 10px; transform: translateY(-50%); }
-    
-    /* Layout Adjustments */
     .p-top { top: 107px; left: 50%; transform: translateX(-50%); }
     .p-bottom { bottom: 105px; left: 50%; transform: translateX(-50%); }
 
@@ -155,10 +153,14 @@
     }
 
     window.announceScore = () => {
-      const p = [0,1,2,3].map(i => ({ name: document.getElementById(`name-${i}`).value, score: totals[i] }));
+      const p = [0,1,2,3].map(i => {
+        let n = document.getElementById(`name-${i}`).value;
+        if (n.toUpperCase() === "WAEL") n = "Wa'el"; 
+        return { name: n, score: totals[i] };
+      });
       const black = [p[1], p[3]].sort((a,b) => b.score - a.score);
       const red = [p[0], p[2]].sort((a,b) => b.score - a.score);
-      const text = `Black Team: ${black[0].name},,, ${black[0].score}. ,,, ,,, ${black[1].name},,, ${black[1].score}. ,,, ,,, Red Team: ${red[0].name},,, ${red[0].score}. ,,, ,,, ${red[1].name},,, ${red[1].score}.`;
+      const text = `${black[0].name},,, ${black[0].score}. ,,, ,,, ${black[1].name},,, ${black[1].score}. ,,, ,,, ${red[0].name},,, ${red[0].score}. ,,, ,,, ${red[1].name},,, ${red[1].score}.`;
       const msg = new SpeechSynthesisUtterance(text);
       msg.rate = 0.85; msg.pitch = 1.0; msg.lang = 'en-US';
       window.speechSynthesis.speak(msg);
