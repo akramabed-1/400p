@@ -13,12 +13,21 @@
     .match-type-select { background: transparent; color: #ffd54f; border: none; font-weight: 900; font-size: 0.9rem; outline: none; cursor: pointer; text-align: center; -webkit-appearance: none; }
     .admin-only { display: none; }
     
-    #warning-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
-    .warning-content { text-align: center; color: #ff5252; }
-    .warning-text { font-size: 3.5rem; font-weight: 900; margin: 0; text-transform: uppercase; letter-spacing: 2px; }
-    .warning-subtext { color: white; font-size: 1.2rem; margin: 10px 0 30px 0; font-weight: bold; }
-    .ok-btn { background: white; color: black; border: none; padding: 15px 60px; font-size: 1.5rem; font-weight: 900; border-radius: 10px; cursor: pointer; text-transform: uppercase; }
+    /* Global Overlays */
+    #warning-overlay, #winner-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
+    
+    /* Game Over Card Style */
+    .game-over-card { background: white; width: 90%; max-width: 340px; border-radius: 25px; padding: 30px 20px; text-align: center; color: #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 2px solid #ffd54f; box-sizing: border-box; }
+    .card-title { color: #d32f2f; font-size: 1.8rem; font-weight: 900; margin: 0; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .winning-team-name { font-size: 1.5rem; font-weight: 900; margin: 5px 0 20px 0; text-transform: uppercase; color: #000; }
+    .mvp-list { background: #f4f4f4; border-radius: 15px; padding: 15px; text-align: left; margin-bottom: 25px; }
+    .player-row { font-size: 1.2rem; font-weight: 900; padding: 8px 0; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; color: #333; }
+    .player-row:last-child { border-bottom: none; }
+    .mvp-badge { background: #ffd54f; color: #000; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; margin-left: 8px; vertical-align: middle; }
+    
+    .ok-btn-card { background: #000; color: #fff; border: none; width: 100%; padding: 15px; border-radius: 12px; font-size: 1.3rem; font-weight: 900; cursor: pointer; text-transform: uppercase; }
 
+    /* Controls */
     .top-ctrl { position: fixed; top: 68px; width: 100%; height: 40px; z-index: 1100; pointer-events: none; display: flex; justify-content: space-between; padding: 0 10px; width: calc(100% - 20px); }
     .alz-btn, .reset-select { height: 35px; width: 85px; border-radius: 6px; font-weight: 900; font-size: 0.65rem; cursor: pointer; pointer-events: auto; outline: none; text-transform: uppercase; }
     .alz-btn { background: #ff5252; color: white; border: 2px solid white; }
@@ -27,6 +36,7 @@
     .bottom-right-ctrl { position: fixed; bottom: 25px; right: 15px; z-index: 1100; }
     .voice-btn { height: 45px; width: 85px; border-radius: 6px; font-weight: 900; font-size: 0.8rem; cursor: pointer; background: #111; color: #42a5f5; border: 2px solid #42a5f5; outline: none; text-transform: uppercase; }
 
+    /* Table & Panels */
     .table-container { position: relative; width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .card-table { position: relative; width: 85vw; height: 85vw; max-width: 400px; max-height: 400px; background: radial-gradient(circle, #0f7b3c 0, #064020 85%); border-radius: 50%; }
     .center-panel { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); padding: 10px; border-radius: 15px; text-align: center; width: 95px; border: 2px solid #ffd54f; z-index: 100; }
@@ -36,7 +46,7 @@
     .team-red { background: #fff5f5; }
     .team-black { background: #f4f4f4; }
 
-    /* All 4 panels pushed 1px more outward */
+    /* Spacing: 7px side, 104px top/bottom */
     .p-right { top: 50%; right: 7px; transform: translateY(-50%); }
     .p-left { top: 50%; left: 7px; transform: translateY(-50%); }
     .p-top { top: 104px; left: 50%; transform: translateX(-50%); }
@@ -51,9 +61,6 @@
     .p-tot-display { font-size: 1.9rem; font-weight: 900; background: rgba(0,0,0,0.05); margin-top: auto; padding: 8px 0; border-radius: 0 0 12px 12px; color: #333; border-top: 1px solid rgba(0,0,0,0.1); }
     .dealer-active-score { background: #ffd54f !important; color: #000 !important; }
 
-    #winner-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 5000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; box-sizing: border-box; }
-    .win-title { font-size: 2.2rem; font-weight: 900; margin: 0; line-height: 1.2; text-transform: uppercase; }
-    .mvp-box { background: #ffd54f; color: black; padding: 20px; border-radius: 12px; margin: 25px 0; font-weight: 900; font-size: 1.4rem; min-width: 280px; }
     .history-section { background: #000; border-top: 4px solid #ffd54f; padding: 20px 10px 100px 10px; }
     table { width: 100%; border-collapse: collapse; text-align: center; }
     th { color: #ffd54f; padding: 12px; border-bottom: 1px solid #333; font-size: 0.8rem; }
@@ -62,26 +69,24 @@
 </head>
 <body>
   <div id="warning-overlay">
-    <div class="warning-content">
-      <h1 class="warning-text">INVALID!</h1>
-      <p id="warning-msg" class="warning-subtext">MINIMUM BID REQUIRED: 11</p>
-      <button class="ok-btn" onclick="closeWarning()">OK</button>
-    </div>
+    <h1 style="color:#ff5252; font-size:3rem; margin:0;">INVALID!</h1>
+    <p id="warning-msg" style="color:white; font-weight:bold; margin-bottom:20px;">MINIMUM BID REQUIRED: 11</p>
+    <button class="ok-btn-card" style="width:150px" onclick="document.getElementById('warning-overlay').style.display='none'">OK</button>
   </div>
 
   <div id="winner-overlay">
-    <h2 id="win-team-names" class="win-title">PLAYER & PLAYER</h2>
-    <h3 style="color:#ffd54f; margin: 10px 0; font-weight: 900;">WIN THE MATCH!</h3>
-    <div class="mvp-box" id="mvp-display">MATCH MVP: <br><span id="mvp-name" style="font-size:1.8rem">PLAYER</span></div>
-    <button class="main-btn" style="width: 220px; height: 60px;" onclick="closeWinnerOverlay()">CLOSE PANEL</button>
+    <div class="game-over-card">
+      <h2 class="card-title" id="card-header-text">🏁 GAME OVER</h2>
+      <div class="winning-team-name" id="win-team-label">TEAM BLACK</div>
+      <div class="mvp-list" id="mvp-list-container"></div>
+      <button class="ok-btn-card" id="card-ok-btn" onclick="closeWinnerOverlay()">OK</button>
+    </div>
   </div>
 
   <div id="match-header">
     <div style="display:flex; align-items:center; gap:5px;"><span style="color:#ffd54f;font-weight:900">RED</span><div class="score-box bg-red" id="m1">0</div></div>
     <select class="match-type-select" id="match-type" onchange="changeMatchType(this.value)">
-      <option value="1">SINGLE</option>
-      <option value="3">BO3</option>
-      <option value="5">BO5</option>
+      <option value="1">SINGLE</option><option value="3">BO3</option><option value="5">BO5</option>
     </select>
     <div style="display:flex; align-items:center; gap:5px;"><div class="score-box bg-black" id="m2">0</div><span style="color:#ffd54f;font-weight:900">BLACK</span></div>
   </div>
@@ -91,9 +96,7 @@
     <button class="alz-btn" onclick="moveDealer()">ALZHEIMER</button>
   </div>
 
-  <div class="bottom-right-ctrl">
-    <button class="voice-btn" onclick="announceScore()">VOICE</button>
-  </div>
+  <div class="bottom-right-ctrl"><button class="voice-btn" onclick="announceScore()">VOICE</button></div>
 
   <div class="table-container">
     <div class="card-table">
@@ -104,7 +107,6 @@
         <button id="next-btn" class="main-btn admin-only" onclick="handleNextClick()" disabled style="opacity:0.4">NEXT</button>
       </div>
     </div>
-
     <div class="player-panel team-red p-right" id="panel-0"><input type="text" value="MOHAMAD" id="name-0" class="p-name" style="color:#d32f2f"><select id="bid-0" class="bid-sel"></select><div class="res-group"><button class="res-btn" id="w-0" onclick="setRes(0,'w')">W</button><button class="res-btn" id="l-0" onclick="setRes(0,'l')">L</button></div><div id="pop-0" style="height:15px; font-size:0.8rem; font-weight:bold;"></div><div class="p-tot-display" id="tot-0">0</div></div>
     <div class="player-panel team-red p-left" id="panel-2"><input type="text" value="WAEL" id="name-2" class="p-name" style="color:#d32f2f"><select id="bid-2" class="bid-sel"></select><div class="res-group"><button class="res-btn" id="w-2" onclick="setRes(2,'w')">W</button><button class="res-btn" id="l-2" onclick="setRes(2,'l')">L</button></div><div id="pop-2" style="height:15px; font-size:0.8rem; font-weight:bold;"></div><div class="p-tot-display" id="tot-2">0</div></div>
     <div class="player-panel team-black p-top" id="panel-1"><input type="text" value="AMER" id="name-1" class="p-name"><select id="bid-1" class="bid-sel"></select><div class="res-group"><button class="res-btn" id="w-1" onclick="setRes(1,'w')">W</button><button class="res-btn" id="l-1" onclick="setRes(1,'l')">L</button></div><div id="pop-1" style="height:15px; font-size:0.8rem; font-weight:bold;"></div><div class="p-tot-display" id="tot-1">0</div></div>
@@ -123,7 +125,7 @@
     const app = initializeApp(firebaseConfig); const db = getDatabase(app); const stateRef = ref(db, 'github_liveGame');
     const isAdmin = new URLSearchParams(window.location.search).get('role') === 'admin';
     
-    let round=1, totals=[0,0,0,0], roundRes=[null,null,null,null], teamWins=[0,0], dealerIdx=3, history=[], bidsLocked=false, matchLimit=1, currentBids=[2,2,2,2], lastDiffs=[0,0,0,0];
+    let round=1, totals=[0,0,0,0], roundRes=[null,null,null,null], teamWins=[0,0], dealerIdx=3, history=[], bidsLocked=false, matchLimit=1, currentBids=[2,2,2,2], lastDiffs=[0,0,0,0], gameStatus=null;
     const scoreMap = {2:2, 3:3, 4:4, 5:10, 6:6, 7:14, 8:16, 9:27, 10:40};
 
     if(isAdmin) document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'flex');
@@ -134,6 +136,16 @@
       history = data.history || []; matchLimit = data.matchLimit || 1; 
       bidsLocked = data.bidsLocked || false; currentBids = data.currentBids || [2,2,2,2];
       roundRes = data.roundRes || [null,null,null,null]; lastDiffs = data.lastDiffs || [0,0,0,0];
+      gameStatus = data.gameStatus || null;
+
+      // Announcement Logic (Shared for Spectators)
+      const overlay = document.getElementById('winner-overlay');
+      if(gameStatus) {
+        renderWinnerCard(data.winningTeamIdx, gameStatus);
+        overlay.style.display = 'flex';
+        document.getElementById('card-ok-btn').style.display = isAdmin ? 'block' : 'none';
+      } else { overlay.style.display = 'none'; }
+
       document.getElementById('m1').innerText = teamWins[0]; document.getElementById('m2').innerText = teamWins[1]; 
       document.getElementById('match-type').value = matchLimit;
       document.getElementById('rd-info').innerText = `RD ${round} [${calculateRequiredTotal()}]`;
@@ -153,13 +165,26 @@
       renderHistory();
     });
 
-    window.showWarning = (msg) => { document.getElementById('warning-msg').innerText = msg; document.getElementById('warning-overlay').style.display = 'flex'; };
-    window.closeWarning = () => { document.getElementById('warning-overlay').style.display = 'none'; };
+    function renderWinnerCard(teamIdx, status) {
+      if (teamIdx === undefined) return;
+      const p1 = teamIdx === 0 ? 0 : 1; const p2 = teamIdx === 0 ? 2 : 3;
+      const names = [document.getElementById('name-'+p1).value, document.getElementById('name-'+p2).value];
+      const scores = [totals[p1], totals[p2]];
+      
+      document.getElementById('card-header-text').innerText = (status === "matchOver") ? "🏆 MATCH WINNER" : "🏁 GAME OVER";
+      document.getElementById('win-team-label').innerText = teamIdx === 0 ? "TEAM RED" : "TEAM BLACK";
+      
+      const container = document.getElementById('mvp-list-container');
+      container.innerHTML = "";
+      const sorted = [{n:names[0], s:scores[0]}, {n:names[1], s:scores[1]}].sort((a,b) => b.s - a.s);
+      sorted.forEach((p, i) => {
+        const mvp = (i === 0 || p.s === sorted[0].s) ? '<span class="mvp-badge">MVP</span>' : '';
+        container.innerHTML += `<div class="player-row"><span>${p.n} (${p.s})${mvp}</span></div>`;
+      });
+    }
 
     function calculateRequiredTotal() {
-        let req = 11;
-        for(let i=0; i<4; i++) { if(totals[i] >= 40) req = 13; else if(totals[i] >= 30 && req < 13) req = 12; }
-        return req;
+        let req = 11; for(let i=0; i<4; i++) { if(totals[i] >= 40) req = 13; else if(totals[i] >= 30 && req < 13) req = 12; } return req;
     }
     function getMinBidForScore(score) { if (score >= 40) return 4; if (score >= 30) return 3; return 2; }
     function updateDropdownOptions(i) {
@@ -168,6 +193,65 @@
       for(let j=start; j<=10; j++){ let o = document.createElement('option'); o.value=j; o.innerText=j; s.appendChild(o); }
     }
 
+    window.toggleBid = () => {
+      if(!isAdmin) return;
+      if(!bidsLocked) {
+        let sum = 0, req = calculateRequiredTotal(), newBids = [];
+        for(let i=0; i<4; i++) { let val = parseInt(document.getElementById('bid-'+i).value); sum += val; newBids.push(val); }
+        if(sum < req) { document.getElementById('warning-msg').innerText = `MINIMUM BID REQUIRED: ${req}`; document.getElementById('warning-overlay').style.display='flex'; return; }
+        bidsLocked = true; currentBids = newBids; roundRes = ['w','w','w','w']; 
+        document.getElementById('calc-btn').disabled = false; document.getElementById('calc-btn').style.opacity = "1";
+      } else {
+        bidsLocked = false; lastDiffs = [0,0,0,0]; roundRes = [null,null,null,null];
+        document.getElementById('calc-btn').disabled = true; document.getElementById('calc-btn').style.opacity = "0.4";
+      }
+      pushState();
+    };
+
+    window.doCalc = () => {
+      if(!isAdmin) return;
+      lastDiffs = [0,1,2,3].map(i => {
+        let b = currentBids[i]; let s = (totals[i] < 30) ? (scoreMap[b] || b) : b;
+        return (roundRes[i] === 'w') ? s : -s;
+      });
+      document.getElementById('next-btn').disabled = false; document.getElementById('next-btn').style.opacity = "1";
+      pushState();
+    };
+
+    window.handleNextClick = () => {
+      if(!isAdmin) return;
+      for(let i=0; i<4; i++) totals[i] += lastDiffs[i];
+      history.push({rd: round, s: [...totals]});
+      let winT1 = ((totals[0] >= 41 && totals[2] >= 0) || (totals[2] >= 41 && totals[0] >= 0));
+      let winT2 = ((totals[1] >= 41 && totals[3] >= 0) || (totals[3] >= 41 && totals[1] >= 0));
+      if(winT1 || winT2) {
+        let winningTeamIdx = (winT1 && winT2) ? (Math.max(totals[0], totals[2]) > Math.max(totals[1], totals[3]) ? 0 : 1) : (winT1 ? 0 : 1);
+        teamWins[winningTeamIdx]++;
+        gameStatus = (teamWins[winningTeamIdx] >= Math.ceil(matchLimit/2)) ? "matchOver" : "gameOver";
+        pushState({ winningTeamIdx }); return;
+      }
+      round++; dealerIdx = (dealerIdx + 1) % 4; bidsLocked = false; roundRes = [null,null,null,null]; lastDiffs = [0,0,0,0];
+      currentBids = totals.map(t => getMinBidForScore(t));
+      pushState();
+    };
+
+    window.closeWinnerOverlay = () => { 
+        if(!isAdmin) return;
+        const isMatch = (gameStatus === "matchOver");
+        gameStatus = null;
+        if(isMatch) manualHardReset(); else manualReset();
+        pushState();
+    };
+
+    window.handleReset = (sel) => { if(isAdmin && sel.value) { if(sel.value==='game' && confirm("Reset Game?")) manualReset(); if(sel.value==='match' && confirm("Wipe Match?")) manualHardReset(); sel.value=""; } };
+    window.manualReset = () => { round=1; totals=[0,0,0,0]; history=[]; bidsLocked=false; roundRes=[null,null,null,null]; lastDiffs=[0,0,0,0]; currentBids = totals.map(t => getMinBidForScore(t)); gameStatus=null; pushState(); };
+    window.manualHardReset = () => { teamWins=[0,0]; manualReset(); };
+    window.setRes = (i,r) => { if(!isAdmin) return; roundRes[i]=r; pushState(); };
+    window.changeMatchType = (val) => { if(isAdmin) { matchLimit = parseInt(val); pushState(); } };
+    window.moveDealer = () => { if(isAdmin) { dealerIdx = (dealerIdx+1)%4; pushState(); } };
+    const renderHistory = () => { const hb = document.getElementById('hist-body'); hb.innerHTML = ""; history.slice().reverse().forEach(row => hb.innerHTML += `<tr><td>${row.rd}</td><td>${row.s[0]}</td><td>${row.s[1]}</td><td>${row.s[2]}</td><td>${row.s[3]}</td></tr>`); };
+    const pushState = (extra = {}) => { if(isAdmin) set(stateRef, { round, totals, teamWins, dealerIdx, history, matchLimit, bidsLocked, currentBids, roundRes, lastDiffs, gameStatus, ...extra }); };
+    
     window.announceScore = () => {
       const p = [0,1,2,3].map(i => {
         let n = document.getElementById(`name-${i}`).value;
@@ -178,76 +262,9 @@
       const red = [p[0], p[2]].sort((a,b) => b.score - a.score);
       const phrases = [`${black[0].name}, ${black[0].score}`, `${black[1].name}, ${black[1].score}`, `${red[0].name}, ${red[0].score}`, `${red[1].name}, ${red[1].score}`];
       let i = 0;
-      function speakNext() {
-        if (i < phrases.length) {
-          const msg = new SpeechSynthesisUtterance(phrases[i]);
-          msg.rate = 0.85;
-          msg.onend = () => { i++; setTimeout(speakNext, 1200); };
-          window.speechSynthesis.speak(msg);
-        }
-      }
-      window.speechSynthesis.cancel();
-      speakNext();
+      function speakNext() { if (i < phrases.length) { const msg = new SpeechSynthesisUtterance(phrases[i]); msg.rate = 0.85; msg.onend = () => { i++; setTimeout(speakNext, 1200); }; window.speechSynthesis.speak(msg); } }
+      window.speechSynthesis.cancel(); speakNext();
     };
-
-    window.toggleBid = () => {
-      if(!isAdmin) return;
-      if(!bidsLocked) {
-        let sum = 0; let req = calculateRequiredTotal(); let newBids = [];
-        for(let i=0; i<4; i++) { let val = parseInt(document.getElementById('bid-'+i).value); sum += val; newBids.push(val); }
-        if(sum < req) { showWarning(`MINIMUM BID REQUIRED: ${req}`); return; }
-        bidsLocked = true; currentBids = newBids; roundRes = ['w','w','w','w']; 
-        document.getElementById('calc-btn').disabled = false; document.getElementById('calc-btn').style.opacity = "1";
-      } else {
-        bidsLocked = false; lastDiffs = [0,0,0,0]; roundRes = [null,null,null,null];
-        document.getElementById('calc-btn').disabled = true; document.getElementById('calc-btn').style.opacity = "0.4";
-        document.getElementById('next-btn').disabled = true; document.getElementById('next-btn').style.opacity = "0.4";
-      }
-      pushState();
-    };
-
-    window.setRes = (i,r) => { if(!isAdmin) return; roundRes[i]=r; pushState(); };
-    window.changeMatchType = (val) => { if(isAdmin) { matchLimit = parseInt(val); pushState(); } };
-    window.doCalc = () => {
-      if(!isAdmin) return;
-      lastDiffs = [0,1,2,3].map(i => {
-        let b = currentBids[i]; let s = (totals[i] < 30) ? (scoreMap[b] || b) : b;
-        return (roundRes[i] === 'w') ? s : -s;
-      });
-      document.getElementById('next-btn').disabled = false; document.getElementById('next-btn').style.opacity = "1";
-      pushState();
-    };
-    window.handleNextClick = () => {
-      if(!isAdmin) return;
-      for(let i=0; i<4; i++) totals[i] += lastDiffs[i];
-      history.push({rd: round, s: [...totals]});
-      let winT1 = ((totals[0] >= 41 && totals[2] >= 0) || (totals[2] >= 41 && totals[0] >= 0));
-      let winT2 = ((totals[1] >= 41 && totals[3] >= 0) || (totals[3] >= 41 && totals[1] >= 0));
-      if(winT1 || winT2) {
-        let winningTeamIdx = (winT1 && winT2) ? (Math.max(totals[0], totals[2]) > Math.max(totals[1], totals[3]) ? 0 : 1) : (winT1 ? 0 : 1);
-        teamWins[winningTeamIdx]++;
-        if(teamWins[winningTeamIdx] >= Math.ceil(matchLimit/2)) showMatchWinner(winningTeamIdx); else manualReset();
-        return;
-      }
-      round++; dealerIdx = (dealerIdx + 1) % 4; bidsLocked = false; roundRes = [null,null,null,null]; lastDiffs = [0,0,0,0];
-      currentBids = totals.map(t => getMinBidForScore(t));
-      pushState();
-    };
-    function showMatchWinner(teamIdx) {
-      const p1 = teamIdx === 0 ? 0 : 1; const p2 = teamIdx === 0 ? 2 : 3;
-      const n1 = document.getElementById('name-'+p1).value; const n2 = document.getElementById('name-'+p2).value;
-      document.getElementById('win-team-names').innerText = `${n1} & ${n2}`;
-      document.getElementById('win-team-names').style.color = teamIdx === 0 ? "#d32f2f" : "#ffd54f";
-      document.getElementById('mvp-name').innerText = (totals[p1] === totals[p2]) ? `${n1} (MVP) & ${n2} (MVP)` : (totals[p1] > totals[p2] ? `${n1} (MVP)` : `${n2} (MVP)`);
-      document.getElementById('winner-overlay').style.display = 'flex'; pushState();
-    }
-    window.closeWinnerOverlay = () => { document.getElementById('winner-overlay').style.display = 'none'; };
-    window.handleReset = (sel) => { if(isAdmin && sel.value) { if(sel.value==='game' && confirm("Reset Game?")) manualReset(); if(sel.value==='match' && confirm("Wipe Match?")) manualHardReset(); sel.value=""; } };
-    window.moveDealer = () => { if(isAdmin) { dealerIdx = (dealerIdx+1)%4; pushState(); } };
-    window.manualReset = () => { round=1; totals=[0,0,0,0]; history=[]; bidsLocked=false; roundRes=[null,null,null,null]; lastDiffs=[0,0,0,0]; currentBids = totals.map(t => getMinBidForScore(t)); pushState(); };
-    window.manualHardReset = () => { teamWins=[0,0]; manualReset(); };
-    const renderHistory = () => { const hb = document.getElementById('hist-body'); hb.innerHTML = ""; history.slice().reverse().forEach(row => hb.innerHTML += `<tr><td>${row.rd}</td><td>${row.s[0]}</td><td>${row.s[1]}</td><td>${row.s[2]}</td><td>${row.s[3]}</td></tr>`); };
-    const pushState = () => { if(isAdmin) set(stateRef, { round, totals, teamWins, dealerIdx, history, matchLimit, bidsLocked, currentBids, roundRes, lastDiffs }); };
   </script>
 </body>
 </html>
