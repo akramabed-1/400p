@@ -80,7 +80,7 @@
       <div class="winning-team-name" id="win-team-label">TEAM BLACK</div>
       <div class="mvp-list" id="mvp-list-container"></div>
       <div class="overlay-btns">
-        <button class="cheer-btn-overlay" onclick="playCheer()">📣 CHEER</button>
+        <button class="cheer-btn-overlay" onclick="playCheer()">🎉 HURRAY</button>
         <button class="ok-btn" id="overlay-close-btn" onclick="closeWinnerOverlay()">OK</button>
       </div>
     </div>
@@ -140,23 +140,50 @@
     let gameWinner = null, matchWinner = null, playerGameWins = [0,0,0,0];
     const scoreMap = {2:2, 3:3, 4:4, 5:10, 6:6, 7:14, 8:16, 9:27, 10:40};
 
-    // --- CHEER SOUND LOGIC ---
+    // --- UPGRADED "HURRAY" SYNTH ---
     window.playCheer = () => {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const bufferSize = audioCtx.sampleRate * 2.0;
-        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-        const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) { data[i] = Math.random() * 2 - 1; }
+        const duration = 2.0;
+        
+        // Function to create a rising "whoop" sound
+        const createWhoop = (freq, delay) => {
+            const osc = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime + delay);
+            osc.frequency.exponentialRampToValueAtTime(freq * 2.5, audioCtx.currentTime + delay + 0.6);
+            
+            g.gain.setValueAtTime(0, audioCtx.currentTime + delay);
+            g.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + delay + 0.1);
+            g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + delay + 0.8);
+            
+            osc.connect(g);
+            g.connect(audioCtx.destination);
+            osc.start(audioCtx.currentTime + delay);
+            osc.stop(audioCtx.currentTime + delay + 0.8);
+        };
+
+        // Create a crowd roar (noise)
+        const noiseBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * duration, audioCtx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < audioCtx.sampleRate * duration; i++) { output[i] = Math.random() * 2 - 1; }
         const noise = audioCtx.createBufferSource();
-        noise.buffer = buffer;
-        const filter = audioCtx.createBiquadFilter();
-        filter.type = 'lowpass'; filter.frequency.setValueAtTime(1200, audioCtx.currentTime);
-        const gain = audioCtx.createGain();
-        gain.gain.setValueAtTime(0, audioCtx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.4, audioCtx.currentTime + 0.1);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.8);
-        noise.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
+        noise.buffer = noiseBuffer;
+        const noiseFilter = audioCtx.createBiquadFilter();
+        noiseFilter.type = 'lowpass';
+        noiseFilter.frequency.setValueAtTime(1000, audioCtx.currentTime);
+        noiseFilter.frequency.exponentialRampToValueAtTime(2000, audioCtx.currentTime + 1.0);
+        const noiseGain = audioCtx.createGain();
+        noiseGain.gain.setValueAtTime(0, audioCtx.currentTime);
+        noiseGain.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.2);
+        noiseGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noiseGain.connect(audioCtx.destination);
         noise.start();
+
+        // Layer the "Whoops" (the Hurray voices)
+        createWhoop(150, 0);   // Low voice
+        createWhoop(220, 0.05); // Mid voice
+        createWhoop(330, 0.1);  // High voice
     };
 
     if(isAdmin) document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'flex');
