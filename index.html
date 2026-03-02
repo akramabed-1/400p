@@ -138,6 +138,16 @@
 
     onValue(stateRef, (snapshot) => {
       const data = snapshot.val(); if (!data) return;
+
+      // --- ADDED SYNCED SOUND LOGIC ---
+      if ((data.gameWinner !== null || data.matchWinner !== null) && 
+          document.getElementById('winner-overlay').style.display !== 'flex') {
+          const cheer = new Audio("https://www.soundjay.com/human/sounds/applause-01.mp3");
+          cheer.play().catch(() => {});
+          setTimeout(() => { cheer.pause(); }, 3000);
+      }
+      // --------------------------------
+
       round = data.round || 1; 
       totals = data.totals || [0,0,0,0]; 
       teamWins = data.teamWins || [0,0]; 
@@ -145,184 +155,4 @@
       history = data.history || []; 
       matchLimit = data.matchLimit || 1; 
       bidsLocked = data.bidsLocked || false; 
-      currentBids = data.currentBids || [2,2,2,2];
-      roundRes = data.roundRes || [null,null,null,null]; 
-      lastDiffs = data.lastDiffs || [0,0,0,0];
-      gameWinner = data.gameWinner ?? null; 
-      matchWinner = data.matchWinner ?? null; 
-      playerGameWins = data.playerGameWins || [0,0,0,0];
-
-      document.getElementById('m1').innerText = teamWins[0]; 
-      document.getElementById('m2').innerText = teamWins[1]; 
-      document.getElementById('match-type').value = matchLimit;
-      document.getElementById('rd-info').innerText = `RD ${round} [${calculateRequiredTotal()}]`;
-      
-      for(let i=0; i<4; i++) {
-        const nameVal = document.getElementById('name-'+i).value;
-        document.getElementById('th-'+i).innerText = nameVal.substring(0,3).toUpperCase();
-        document.getElementById('tot-'+i).innerText = totals[i];
-        document.getElementById('tot-'+i).classList.toggle('dealer-active-score', i === dealerIdx);
-        updateDropdownOptions(i);
-        document.getElementById('bid-'+i).value = currentBids[i];
-        document.getElementById('bid-'+i).disabled = !isAdmin || bidsLocked;
-        document.getElementById('w-'+i).className = 'res-btn' + (roundRes[i] === 'w' ? ' win-active' : '');
-        document.getElementById('l-'+i).className = 'res-btn' + (roundRes[i] === 'l' ? ' loss-active' : '');
-        const popEl = document.getElementById('pop-'+i);
-        if (lastDiffs[i] !== 0) { popEl.innerText = (lastDiffs[i] > 0 ? "+" : "") + lastDiffs[i]; popEl.style.color = lastDiffs[i] > 0 ? "#4caf50" : "#ff5252"; }
-        else { popEl.innerText = ""; }
-      }
-
-      if (matchWinner !== null) {
-        showOverlayUI(matchWinner, true);
-      } else if (gameWinner !== null) {
-        showOverlayUI(gameWinner, false);
-      } else {
-        document.getElementById('winner-overlay').style.display = 'none';
-      }
-
-      document.getElementById('bid-btn').innerText = bidsLocked ? "REBID" : "BID";
-      document.getElementById('overlay-close-btn').style.display = isAdmin ? 'block' : 'none';
-      renderHistory();
-    });
-
-    function calculateRequiredTotal() {
-        let req = 11;
-        for(let i=0; i<4; i++) { if(totals[i] >= 40) req = 13; else if(totals[i] >= 30 && req < 13) req = 12; }
-        return req;
-    }
-    function getMinBidForScore(score) { if (score >= 40) return 4; if (score >= 30) return 3; return 2; }
-    
-    function updateDropdownOptions(i) {
-      const s = document.getElementById('bid-'+i); s.innerHTML = '';
-      let start = getMinBidForScore(totals[i]);
-      for(let j=start; j<=10; j++){ let o = document.createElement('option'); o.value=j; o.innerText=j; s.appendChild(o); }
-    }
-
-    function showOverlayUI(teamIdx, isMatch) {
-      const pIdx = teamIdx === 0 ? [0, 2] : [1, 3];
-      const container = document.getElementById('mvp-list-container');
-      const titleEl = document.getElementById('overlay-title');
-      container.innerHTML = "";
-
-      if (isMatch) {
-        titleEl.innerHTML = "🏆 MATCH CHAMPIONS";
-        titleEl.style.color = "#ffd54f";
-        document.getElementById('win-team-label').innerText = teamIdx === 0 ? "TEAM RED DOMINATION" : "TEAM BLACK DOMINATION";
-        
-        let players = pIdx.map(i => ({ name: document.getElementById('name-'+i).value, val: playerGameWins[i] }));
-        let maxWins = Math.max(...players.map(p => p.val));
-        players.forEach(p => {
-            const tag = (p.val === maxWins && p.val > 0) ? '<span class="mvp-badge">MATCH MVP</span>' : '';
-            container.innerHTML += `<div class="player-row"><span>${p.name} (${p.val} Wins)${tag}</span></div>`;
-        });
-      } else {
-        titleEl.innerHTML = "🏁 GAME OVER";
-        titleEl.style.color = "#d32f2f";
-        document.getElementById('win-team-label').innerText = teamIdx === 0 ? "TEAM RED" : "TEAM BLACK";
-        
-        let players = pIdx.map(i => ({ name: document.getElementById('name-'+i).value, val: totals[i] }));
-        let maxScore = Math.max(...players.map(p => p.val));
-        players.forEach(p => {
-            const tag = p.val === maxScore ? '<span class="mvp-badge">MVP</span>' : '';
-            container.innerHTML += `<div class="player-row"><span>${p.name} (${p.val})${tag}</span></div>`;
-        });
-      }
-      document.getElementById('winner-overlay').style.display = 'flex';
-    }
-
-    window.handleNextClick = () => {
-      if(!isAdmin) return;
-      let tempTotals = [...totals];
-      for(let i=0; i<4; i++) tempTotals[i] += lastDiffs[i];
-      history.push({rd: round, s: [...tempTotals]});
-      totals = [...tempTotals];
-
-      let winT1 = ((totals[0] >= 41 && totals[2] >= 0) || (totals[2] >= 41 && totals[0] >= 0));
-      let winT2 = ((totals[1] >= 41 && totals[3] >= 0) || (totals[3] >= 41 && totals[1] >= 0));
-
-      if(winT1 || winT2) {
-        let winIdx = (winT1 && winT2) ? (Math.max(totals[0], totals[2]) > Math.max(totals[1], totals[3]) ? 0 : 1) : (winT1 ? 0 : 1);
-        const pIdx = winIdx === 0 ? [0, 2] : [1, 3];
-        const topInTeam = totals[pIdx[0]] >= totals[pIdx[1]] ? pIdx[0] : pIdx[1];
-        playerGameWins[topInTeam]++;
-        if(totals[pIdx[0]] === totals[pIdx[1]]) playerGameWins[pIdx[1]]++; 
-        teamWins[winIdx]++;
-        gameWinner = winIdx;
-        if(teamWins[winIdx] >= Math.ceil(matchLimit/2)) matchWinner = winIdx;
-      } else {
-        round++; dealerIdx = (dealerIdx + 1) % 4; bidsLocked = false; roundRes = [null,null,null,null]; lastDiffs = [0,0,0,0];
-        currentBids = totals.map(t => getMinBidForScore(t));
-      }
-      pushState();
-    };
-
-    window.closeWinnerOverlay = () => {
-      if(!isAdmin) return;
-      // ONLY clear the flags, do not reset data
-      gameWinner = null; 
-      matchWinner = null; 
-      pushState();
-    };
-
-    window.toggleBid = () => {
-      if(!isAdmin) return;
-      if(!bidsLocked) {
-        let sum = 0, req = calculateRequiredTotal(), newBids = [];
-        for(let i=0; i<4; i++) { let v = parseInt(document.getElementById('bid-'+i).value); sum += v; newBids.push(v); }
-        if(sum < req) { window.showWarning(`MINIMUM BID: ${req}`); return; }
-        bidsLocked = true; currentBids = newBids; roundRes = ['w','w','w','w']; 
-        document.getElementById('calc-btn').disabled = false; document.getElementById('calc-btn').style.opacity = "1";
-      } else {
-        bidsLocked = false; lastDiffs = [0,0,0,0]; roundRes = [null,null,null,null];
-        document.getElementById('calc-btn').disabled = true; document.getElementById('calc-btn').style.opacity = "0.4";
-        document.getElementById('next-btn').disabled = true; document.getElementById('next-btn').style.opacity = "0.4";
-      }
-      pushState();
-    };
-
-    window.setRes = (i,r) => { if(!isAdmin) return; roundRes[i]=r; pushState(); };
-    window.doCalc = () => {
-      if(!isAdmin) return;
-      lastDiffs = [0,1,2,3].map(i => {
-        let b = currentBids[i]; let s = (totals[i] < 30) ? (scoreMap[b] || b) : b;
-        return (roundRes[i] === 'w') ? s : -s;
-      });
-      document.getElementById('next-btn').disabled = false; document.getElementById('next-btn').style.opacity = "1";
-      pushState();
-    };
-
-    window.manualReset = () => { round=1; totals=[0,0,0,0]; history=[]; bidsLocked=false; roundRes=[null,null,null,null]; lastDiffs=[0,0,0,0]; currentBids = [2,2,2,2]; gameWinner=null; matchWinner=null; };
-    window.manualHardReset = () => { teamWins=[0,0]; playerGameWins=[0,0,0,0]; manualReset(); };
-    window.handleReset = (sel) => { if(isAdmin && sel.value) { if(sel.value==='game' && confirm("Reset Game?")) manualReset(); if(sel.value==='match' && confirm("Wipe Match?")) manualHardReset(); sel.value=""; pushState(); } };
-    window.moveDealer = () => { if(isAdmin) { dealerIdx = (dealerIdx+1)%4; pushState(); } };
-    window.showWarning = (msg) => { document.getElementById('warning-msg').innerText = msg; document.getElementById('warning-overlay').style.display = 'flex'; };
-    window.closeWarning = () => { document.getElementById('warning-overlay').style.display = 'none'; };
-    window.changeMatchType = (val) => { if(isAdmin) { matchLimit = parseInt(val); pushState(); } };
-    
-    const pushState = () => { if(isAdmin) set(stateRef, { round, totals, teamWins, dealerIdx, history, matchLimit, bidsLocked, currentBids, roundRes, lastDiffs, gameWinner, matchWinner, playerGameWins }); };
-    const renderHistory = () => { const hb = document.getElementById('hist-body'); hb.innerHTML = ""; history.slice().reverse().forEach(row => hb.innerHTML += `<tr><td>${row.rd}</td><td>${row.s[0]}</td><td>${row.s[1]}</td><td>${row.s[2]}</td><td>${row.s[3]}</td></tr>`); };
-
-    window.announceScore = () => {
-      const p = [0,1,2,3].map(i => {
-        let n = document.getElementById(`name-${i}`).value;
-        if (n.toUpperCase() === "WAEL") n = "Wah El"; 
-        return { name: n, score: totals[i] };
-      });
-      const black = [p[1], p[3]].sort((a,b) => b.score - a.score);
-      const red = [p[0], p[2]].sort((a,b) => b.score - a.score);
-      const phrases = [`${black[0].name}, ${black[0].score}`, `${black[1].name}, ${black[1].score}`, `${red[0].name}, ${red[0].score}`, `${red[1].name}, ${red[1].score}`];
-      let i = 0;
-      function speakNext() {
-        if (i < phrases.length) {
-          const msg = new SpeechSynthesisUtterance(phrases[i]);
-          msg.rate = 0.85;
-          msg.onend = () => { i++; setTimeout(speakNext, 1200); };
-          window.speechSynthesis.speak(msg);
-        }
-      }
-      window.speechSynthesis.cancel();
-      speakNext();
-    };
-  </script>
-</body>
-</html>
+      currentBids = data.current
