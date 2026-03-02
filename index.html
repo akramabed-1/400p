@@ -140,24 +140,24 @@
     let gameWinner = null, matchWinner = null, playerGameWins = [0,0,0,0];
     const scoreMap = {2:2, 3:3, 4:4, 5:10, 6:6, 7:14, 8:16, 9:27, 10:40};
 
-    // --- NEW CELEBRATION SPEECH LOGIC ---
+    // --- REFINED HURRAY LOGIC ---
     window.playCheer = () => {
-        const winLabel = document.getElementById('win-team-label').innerText;
-        const teamName = winLabel.includes("RED") ? "Team Red" : "Team Black";
+        const labelText = document.getElementById('win-team-label').innerText.toUpperCase();
+        let shoutName = labelText.includes("RED") ? "Red" : "Black";
         
         window.speechSynthesis.cancel();
         
         const speak = (txt, rate, pitch) => {
             const msg = new SpeechSynthesisUtterance(txt);
-            msg.rate = rate; 
-            msg.pitch = pitch;
+            msg.rate = rate; msg.pitch = pitch;
             window.speechSynthesis.speak(msg);
         };
 
-        speak(teamName, 1.4, 1.0);
-        speak(teamName, 1.6, 1.2);
-        speak(teamName, 1.8, 1.4);
-        speak("Congratulations!", 0.9, 1.0);
+        speak(shoutName, 1.3, 1.0);
+        speak(shoutName, 1.7, 1.3);
+        speak(shoutName, 2.2, 1.6);
+        
+        setTimeout(() => speak("Victory is yours!", 1.0, 1.1), 200);
     };
 
     if(isAdmin) document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'flex');
