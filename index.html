@@ -134,7 +134,7 @@
     let gameWinner = null, matchWinner = null, playerGameWins = [0,0,0,0];
     const scoreMap = {2:2, 3:3, 4:4, 5:10, 6:6, 7:14, 8:16, 9:27, 10:40};
 
-    // --- SOUND LOGIC ---
+    // --- UPDATED AUDIO LOGIC ---
     const cheerAudio = new Audio("https://actions.google.com/sounds/v1/human_voices/crowd_cheer.ogg");
 
     if(isAdmin) document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'flex');
@@ -147,7 +147,7 @@
       const isVisible = document.getElementById('winner-overlay').style.display === 'flex';
       
       if (hasWinner && !isVisible) {
-          cheerAudio.play().catch(() => { /* Silent if blocked */ });
+          cheerAudio.play().catch(() => { console.log("Blocked: Click VOICE once to unlock sound."); });
           setTimeout(() => { cheerAudio.pause(); cheerAudio.currentTime = 0; }, 4000);
       }
 
@@ -238,103 +238,3 @@
         players.forEach(p => {
             const tag = p.val === maxScore ? '<span class="mvp-badge">MVP</span>' : '';
             container.innerHTML += `<div class="player-row"><span>${p.name} (${p.val})${tag}</span></div>`;
-        });
-      }
-      document.getElementById('winner-overlay').style.display = 'flex';
-    }
-
-    window.handleNextClick = () => {
-      if(!isAdmin) return;
-      let tempTotals = [...totals];
-      for(let i=0; i<4; i++) tempTotals[i] += lastDiffs[i];
-      history.push({rd: round, s: [...tempTotals]});
-      totals = [...tempTotals];
-
-      let winT1 = ((totals[0] >= 41 && totals[2] >= 0) || (totals[2] >= 41 && totals[0] >= 0));
-      let winT2 = ((totals[1] >= 41 && totals[3] >= 0) || (totals[3] >= 41 && totals[1] >= 0));
-
-      if(winT1 || winT2) {
-        let winIdx = (winT1 && winT2) ? (Math.max(totals[0], totals[2]) > Math.max(totals[1], totals[3]) ? 0 : 1) : (winT1 ? 0 : 1);
-        const pIdx = winIdx === 0 ? [0, 2] : [1, 3];
-        const topInTeam = totals[pIdx[0]] >= totals[pIdx[1]] ? pIdx[0] : pIdx[1];
-        playerGameWins[topInTeam]++;
-        if(totals[pIdx[0]] === totals[pIdx[1]]) playerGameWins[pIdx[1]]++; 
-        teamWins[winIdx]++;
-        gameWinner = winIdx;
-        if(teamWins[winIdx] >= Math.ceil(matchLimit/2)) matchWinner = winIdx;
-      } else {
-        round++; dealerIdx = (dealerIdx + 1) % 4; bidsLocked = false; roundRes = [null,null,null,null]; lastDiffs = [0,0,0,0];
-        currentBids = totals.map(t => getMinBidForScore(t));
-      }
-      pushState();
-    };
-
-    window.closeWinnerOverlay = () => {
-      if(!isAdmin) return;
-      gameWinner = null; 
-      matchWinner = null; 
-      pushState();
-    };
-
-    window.toggleBid = () => {
-      if(!isAdmin) return;
-      if(!bidsLocked) {
-        let sum = 0, req = calculateRequiredTotal(), newBids = [];
-        for(let i=0; i<4; i++) { let v = parseInt(document.getElementById('bid-'+i).value); sum += v; newBids.push(v); }
-        if(sum < req) { window.showWarning(`MINIMUM BID: ${req}`); return; }
-        bidsLocked = true; currentBids = newBids; roundRes = ['w','w','w','w']; 
-        document.getElementById('calc-btn').disabled = false; document.getElementById('calc-btn').style.opacity = "1";
-      } else {
-        bidsLocked = false; lastDiffs = [0,0,0,0]; roundRes = [null,null,null,null];
-        document.getElementById('calc-btn').disabled = true; document.getElementById('calc-btn').style.opacity = "0.4";
-        document.getElementById('next-btn').disabled = true; document.getElementById('next-btn').style.opacity = "0.4";
-      }
-      pushState();
-    };
-
-    window.setRes = (i,r) => { if(!isAdmin) return; roundRes[i]=r; pushState(); };
-    window.doCalc = () => {
-      if(!isAdmin) return;
-      lastDiffs = [0,1,2,3].map(i => {
-        let b = currentBids[i]; let s = (totals[i] < 30) ? (scoreMap[b] || b) : b;
-        return (roundRes[i] === 'w') ? s : -s;
-      });
-      document.getElementById('next-btn').disabled = false; document.getElementById('next-btn').style.opacity = "1";
-      pushState();
-    };
-
-    window.manualReset = () => { round=1; totals=[0,0,0,0]; history=[]; bidsLocked=false; roundRes=[null,null,null,null]; lastDiffs=[0,0,0,0]; currentBids = [2,2,2,2]; gameWinner=null; matchWinner=null; };
-    window.manualHardReset = () => { teamWins=[0,0]; playerGameWins=[0,0,0,0]; manualReset(); };
-    window.handleReset = (sel) => { if(isAdmin && sel.value) { if(sel.value==='game' && confirm("Reset Game?")) manualReset(); if(sel.value==='match' && confirm("Wipe Match?")) manualHardReset(); sel.value=""; pushState(); } };
-    window.moveDealer = () => { if(isAdmin) { dealerIdx = (dealerIdx+1)%4; pushState(); } };
-    window.showWarning = (msg) => { document.getElementById('warning-msg').innerText = msg; document.getElementById('warning-overlay').style.display = 'flex'; };
-    window.closeWarning = () => { document.getElementById('warning-overlay').style.display = 'none'; };
-    window.changeMatchType = (val) => { if(isAdmin) { matchLimit = parseInt(val); pushState(); } };
-    
-    const pushState = () => { if(isAdmin) set(stateRef, { round, totals, teamWins, dealerIdx, history, matchLimit, bidsLocked, currentBids, roundRes, lastDiffs, gameWinner, matchWinner, playerGameWins }); };
-    const renderHistory = () => { const hb = document.getElementById('hist-body'); hb.innerHTML = ""; history.slice().reverse().forEach(row => hb.innerHTML += `<tr><td>${row.rd}</td><td>${row.s[0]}</td><td>${row.s[1]}</td><td>${row.s[2]}</td><td>${row.s[3]}</td></tr>`); };
-
-    window.announceScore = () => {
-      const p = [0,1,2,3].map(i => {
-        let n = document.getElementById(`name-${i}`).value;
-        if (n.toUpperCase() === "WAEL") n = "Wah El"; 
-        return { name: n, score: totals[i] };
-      });
-      const black = [p[1], p[3]].sort((a,b) => b.score - a.score);
-      const red = [p[0], p[2]].sort((a,b) => b.score - a.score);
-      const phrases = [`${black[0].name}, ${black[0].score}`, `${black[1].name}, ${black[1].score}`, `${red[0].name}, ${red[0].score}`, `${red[1].name}, ${red[1].score}`];
-      let i = 0;
-      function speakNext() {
-        if (i < phrases.length) {
-          const msg = new SpeechSynthesisUtterance(phrases[i]);
-          msg.rate = 0.85;
-          msg.onend = () => { i++; setTimeout(speakNext, 1200); };
-          window.speechSynthesis.speak(msg);
-        }
-      }
-      window.speechSynthesis.cancel();
-      speakNext();
-    };
-  </script>
-</body>
-</html>
