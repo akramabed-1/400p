@@ -140,50 +140,24 @@
     let gameWinner = null, matchWinner = null, playerGameWins = [0,0,0,0];
     const scoreMap = {2:2, 3:3, 4:4, 5:10, 6:6, 7:14, 8:16, 9:27, 10:40};
 
-    // --- UPGRADED "HURRAY" SYNTH ---
+    // --- NEW CELEBRATION SPEECH LOGIC ---
     window.playCheer = () => {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const duration = 2.0;
+        const winLabel = document.getElementById('win-team-label').innerText;
+        const teamName = winLabel.includes("RED") ? "Team Red" : "Team Black";
         
-        // Function to create a rising "whoop" sound
-        const createWhoop = (freq, delay) => {
-            const osc = audioCtx.createOscillator();
-            const g = audioCtx.createGain();
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime + delay);
-            osc.frequency.exponentialRampToValueAtTime(freq * 2.5, audioCtx.currentTime + delay + 0.6);
-            
-            g.gain.setValueAtTime(0, audioCtx.currentTime + delay);
-            g.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + delay + 0.1);
-            g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + delay + 0.8);
-            
-            osc.connect(g);
-            g.connect(audioCtx.destination);
-            osc.start(audioCtx.currentTime + delay);
-            osc.stop(audioCtx.currentTime + delay + 0.8);
+        window.speechSynthesis.cancel();
+        
+        const speak = (txt, rate, pitch) => {
+            const msg = new SpeechSynthesisUtterance(txt);
+            msg.rate = rate; 
+            msg.pitch = pitch;
+            window.speechSynthesis.speak(msg);
         };
 
-        // Create a crowd roar (noise)
-        const noiseBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * duration, audioCtx.sampleRate);
-        const output = noiseBuffer.getChannelData(0);
-        for (let i = 0; i < audioCtx.sampleRate * duration; i++) { output[i] = Math.random() * 2 - 1; }
-        const noise = audioCtx.createBufferSource();
-        noise.buffer = noiseBuffer;
-        const noiseFilter = audioCtx.createBiquadFilter();
-        noiseFilter.type = 'lowpass';
-        noiseFilter.frequency.setValueAtTime(1000, audioCtx.currentTime);
-        noiseFilter.frequency.exponentialRampToValueAtTime(2000, audioCtx.currentTime + 1.0);
-        const noiseGain = audioCtx.createGain();
-        noiseGain.gain.setValueAtTime(0, audioCtx.currentTime);
-        noiseGain.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.2);
-        noiseGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-        noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noiseGain.connect(audioCtx.destination);
-        noise.start();
-
-        // Layer the "Whoops" (the Hurray voices)
-        createWhoop(150, 0);   // Low voice
-        createWhoop(220, 0.05); // Mid voice
-        createWhoop(330, 0.1);  // High voice
+        speak(teamName, 1.4, 1.0);
+        speak(teamName, 1.6, 1.2);
+        speak(teamName, 1.8, 1.4);
+        speak("Congratulations!", 0.9, 1.0);
     };
 
     if(isAdmin) document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'flex');
