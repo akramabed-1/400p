@@ -64,7 +64,8 @@
     td { padding: 12px; border-bottom: 1px solid #222; font-size: 1.1rem; }
   </style>
 </head>
-<body onclick="enableAudioContext()"> <div id="warning-overlay">
+<body>
+  <div id="warning-overlay">
     <h1 class="warning-text">INVALID!</h1>
     <p id="warning-msg" class="warning-subtext">MINIMUM BID REQUIRED: 11</p>
     <button class="ok-btn" style="width:160px" onclick="closeWarning()">OK</button>
@@ -133,26 +134,21 @@
     let gameWinner = null, matchWinner = null, playerGameWins = [0,0,0,0];
     const scoreMap = {2:2, 3:3, 4:4, 5:10, 6:6, 7:14, 8:16, 9:27, 10:40};
 
-    // --- PRE-LOAD AUDIO FOR INSTANT PLAY ---
-    const cheerSound = new Audio("https://cdn.pixabay.com/audio/2021/08/04/audio_0621437190.mp3");
-    cheerSound.load();
-
-    window.enableAudioContext = () => {
-       // Dummy play to unlock audio on mobile browsers
-       cheerSound.play().then(() => { cheerSound.pause(); cheerSound.currentTime = 0; }).catch(() => {});
-    };
+    // --- SOUND LOGIC ---
+    const cheerAudio = new Audio("https://actions.google.com/sounds/v1/human_voices/crowd_cheer.ogg");
 
     if(isAdmin) document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'flex');
 
     onValue(stateRef, (snapshot) => {
       const data = snapshot.val(); if (!data) return;
 
-      // --- SYNCED SOUND TRIGGER ---
-      if ((data.gameWinner !== null || data.matchWinner !== null) && 
-          document.getElementById('winner-overlay').style.display !== 'flex') {
-          cheerSound.currentTime = 0;
-          cheerSound.play().catch(e => console.log("Audio play blocked"));
-          setTimeout(() => { cheerSound.pause(); }, 3000);
+      // --- CHEER TRIGGER ---
+      const hasWinner = (data.gameWinner !== null || data.matchWinner !== null);
+      const isVisible = document.getElementById('winner-overlay').style.display === 'flex';
+      
+      if (hasWinner && !isVisible) {
+          cheerAudio.play().catch(() => { /* Silent if blocked */ });
+          setTimeout(() => { cheerAudio.pause(); cheerAudio.currentTime = 0; }, 4000);
       }
 
       round = data.round || 1; 
