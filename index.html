@@ -165,8 +165,14 @@
         const ni = document.getElementById('name-'+i); ni.value = playerNames[i]; ni.disabled = !isAdmin;
         document.getElementById('th-'+i).innerText = playerNames[i].substring(0,3).toUpperCase();
         const totEl = document.getElementById('tot-'+i);
-        if(calcApplied) { totEl.innerText = totals[i] + lastDiffs[i]; totEl.classList.add('preview-mode'); }
-        else { totEl.innerText = totals[i]; totEl.classList.remove('preview-mode'); }
+        
+        // Final score lock: If game is over, we show the totals exactly as they are in DB
+        if(calcApplied && !gameIsOver) { 
+            totEl.innerText = totals[i] + lastDiffs[i]; totEl.classList.add('preview-mode'); 
+        } else { 
+            totEl.innerText = totals[i]; totEl.classList.remove('preview-mode'); 
+        }
+        
         totEl.classList.toggle('dealer-active-score', i === dealerIdx);
         updateDropdownOptions(i);
         document.getElementById('bid-'+i).value = currentBids[i];
@@ -174,7 +180,8 @@
         document.getElementById('w-'+i).className = 'res-btn' + (roundRes[i] === 'w' ? ' win-active' : '');
         document.getElementById('l-'+i).className = 'res-btn' + (roundRes[i] === 'l' ? ' loss-active' : '');
         const p = document.getElementById('pop-'+i);
-        if (lastDiffs[i] !== 0) { p.innerText = (lastDiffs[i] > 0 ? "+" : "") + lastDiffs[i]; p.style.color = lastDiffs[i] > 0 ? "#4caf50" : "#ff5252"; }
+        // Don't show popups if game is over
+        if (lastDiffs[i] !== 0 && !gameIsOver) { p.innerText = (lastDiffs[i] > 0 ? "+" : "") + lastDiffs[i]; p.style.color = lastDiffs[i] > 0 ? "#4caf50" : "#ff5252"; }
         else p.innerText = "";
       }
 
@@ -201,23 +208,41 @@
     };
 
     window.handleNextClick = () => {
+      // PREVENT MULTI-CLICK AND WINNER OVERFLOW
       if(!isAdmin || gameWinner !== null || matchWinner !== null) return;
+      
       let nt = [...totals];
       for(let i=0; i<4; i++) nt[i] += lastDiffs[i];
+      
+      // Update history before doing winner checks
       history.push({rd: round, s: [...nt]});
       totals = [...nt];
+      
+      // Check Winners
       let w1 = ((totals[0] >= 41 && totals[2] >= 0) || (totals[2] >= 41 && totals[0] >= 0));
       let w2 = ((totals[1] >= 41 && totals[3] >= 0) || (totals[3] >= 41 && totals[1] >= 0));
+      
       if(w1 || w2) {
         let wi = (w1 && w2) ? (Math.max(totals[0], totals[2]) > Math.max(totals[1], totals[3]) ? 0 : 1) : (w1 ? 0 : 1);
         const pi = wi === 0 ? [0, 2] : [1, 3];
         const top = totals[pi[0]] >= totals[pi[1]] ? pi[0] : pi[1];
         playerGameWins[top]++;
         if(totals[pi[0]] === totals[pi[1]]) playerGameWins[pi[1]]++; 
-        teamWins[wi]++; gameWinner = wi;
+        
+        teamWins[wi]++; 
+        gameWinner = wi;
         if(teamWins[wi] >= Math.ceil(matchLimit/2)) matchWinner = wi;
+        
+        // RESET PENDING CALCS SO THEY DON'T DOUBLE ADD
+        lastDiffs = [0,0,0,0];
+        calcApplied = false;
       } else {
-        round++; dealerIdx = (dealerIdx + 1) % 4; bidsLocked = false; roundRes = [null,null,null,null]; lastDiffs = [0,0,0,0]; calcApplied = false;
+        round++; 
+        dealerIdx = (dealerIdx + 1) % 4; 
+        bidsLocked = false; 
+        roundRes = [null,null,null,null]; 
+        lastDiffs = [0,0,0,0]; 
+        calcApplied = false;
         currentBids = totals.map(t => getMinBidForScore(t));
       }
       pushState();
@@ -297,8 +322,12 @@
     window.showWarning = (m) => { document.getElementById('warning-msg').innerText = m; document.getElementById('warning-overlay').style.display = 'flex'; };
     window.closeWarning = () => { document.getElementById('warning-overlay').style.display = 'none'; };
     window.changeMatchType = (v) => { if(isAdmin) { matchLimit = parseInt(v); pushState(); } };
+    
+    // Clear the winner flags - Buttons remain locked until RESET is chosen
     window.closeWinnerOverlay = () => { if(!isAdmin) return; gameWinner = null; matchWinner = null; pushState(); };
+
     const pushState = () => { if(isAdmin) set(stateRef, { round, totals, teamWins, dealerIdx, history, matchLimit, bidsLocked, currentBids, roundRes, lastDiffs, gameWinner, matchWinner, playerGameWins, playerNames, voidedRounds, calcApplied }); };
+    
     const renderHistory = () => { 
         const hb = document.getElementById('hist-body'); hb.innerHTML = ""; 
         let comb = [...history.map(h => ({...h, v:false})), ...voidedRounds.map(v => ({...v, v:true}))];
