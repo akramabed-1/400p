@@ -50,7 +50,6 @@
     table { width: 100%; border-collapse: collapse; text-align: center; }
     th { color: #ffd54f; padding: 12px; font-size: 0.8rem; border-bottom: none; }
     td { padding: 12px; border-bottom: 1px solid #222; font-size: 1.1rem; }
-    .void-row td { text-decoration: line-through !important; color: #ff5252 !important; opacity: 0.4; font-style: italic; }
   </style>
 </head>
 <body>
@@ -220,6 +219,7 @@
         dealerIdx = (dealerIdx + 1) % 4;
         bidsLocked = false;
         calcApplied = false;
+        currentBids = [2,2,2,2]; // Reset bids for next round
         pushState();
     };
 
@@ -243,10 +243,11 @@
             round = Math.max(1, round - 1);
             dealerIdx = (dealerIdx - 1 + 4) % 4;
             bidsLocked = false; calcApplied = false;
+            currentBids = [2,2,2,2];
         } else if (action === "game") {
-            round = 1; totals = [0,0,0,0]; history = []; bidsLocked = false; calcApplied = false;
+            round = 1; totals = [0,0,0,0]; history = []; bidsLocked = false; calcApplied = false; currentBids = [2,2,2,2];
         } else if (action === "match") {
-            round = 1; totals = [0,0,0,0]; teamWins = [0,0]; history = []; bidsLocked = false; calcApplied = false;
+            round = 1; totals = [0,0,0,0]; teamWins = [0,0]; history = []; bidsLocked = false; calcApplied = false; currentBids = [2,2,2,2];
         }
         sel.value = "";
         pushState();
