@@ -25,7 +25,6 @@
     .player-row { font-size: 1.2rem; font-weight: 900; padding: 10px 0; border-bottom: 1px solid #ddd; display: flex; align-items: center; justify-content: space-between; }
     .player-row:last-child { border-bottom: none; }
     .mvp-badge { background: #ffd54f; color: #000; font-size: 0.75rem; padding: 4px 8px; border-radius: 6px; margin-left: 8px; animation: pulse 1.5s infinite; }
-    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
     
     .overlay-btns { display: flex; gap: 10px; margin-top: 10px; }
     .ok-btn { background: #000; color: #fff; border: none; flex: 1; padding: 15px; border-radius: 12px; font-size: 1.1rem; font-weight: 900; cursor: pointer; }
@@ -67,7 +66,14 @@
     table { width: 100%; border-collapse: collapse; text-align: center; }
     th { color: #ffd54f; padding: 12px; border-bottom: 1px solid #333; font-size: 0.8rem; }
     td { padding: 12px; border-bottom: 1px solid #222; font-size: 1.1rem; }
-    .void-row { text-decoration: line-through; opacity: 0.35; color: #ff5252; background: rgba(255,0,0,0.05); }
+    
+    /* VOID ROW TD TARGETING */
+    .void-row td { 
+        text-decoration: line-through !important; 
+        color: #ff5252 !important; 
+        opacity: 0.5;
+        font-style: italic;
+    }
   </style>
 </head>
 <body>
@@ -131,7 +137,7 @@
 
   <div class="history-section">
     <div style="color:#ffd54f; text-align:center; padding:10px; font-weight:bold;">SCORE HISTORY</div>
-    <table><thead><tr><th>RD</th><th id="th-0">WAE</th><th id="th-1">AME</th><th id="th-2">MOH</th><th id="th-3">AKR</th></tr></thead><tbody id="hist-body"></tbody></table>
+    <table><thead><tr><th>RD</th><th id="th-0">WAEL</th><th id="th-1">AMER</th><th id="th-2">MOHA</th><th id="th-3">AKRA</th></tr></thead><tbody id="hist-body"></tbody></table>
   </div>
 
   <script type="module">
@@ -143,7 +149,8 @@
     const db = getDatabase(app); 
     const stateRef = ref(db, 'github_liveGame');
     const isAdmin = new URLSearchParams(window.location.search).get('role') === 'admin';
-    
+    if(isAdmin) document.querySelectorAll('.admin-only').forEach(e => e.style.display = 'block');
+
     let round=1, totals=[0,0,0,0], roundRes=[null,null,null,null], teamWins=[0,0], dealerIdx=3, history=[], bidsLocked=false, matchLimit=1, currentBids=[2,2,2,2], lastDiffs=[0,0,0,0], playerNames=["WAEL", "AMER", "MOHAMAD", "AKRAM"], voidedRounds=[], calcApplied=false, gameWinner=null, matchWinner=null, playerGameWins=[0,0,0,0];
     const scoreMap = {2:2, 3:3, 4:4, 5:10, 6:6, 7:14, 8:16, 9:27, 10:40};
 
@@ -163,14 +170,16 @@
 
       for(let i=0; i<4; i++) {
         const ni = document.getElementById('name-'+i); ni.value = playerNames[i]; ni.disabled = !isAdmin;
-        document.getElementById('th-'+i).innerText = playerNames[i].substring(0,3).toUpperCase();
+        // UPDATE: History Header names to 4 letters
+        document.getElementById('th-'+i).innerText = playerNames[i].substring(0,4).toUpperCase();
         const totEl = document.getElementById('tot-'+i);
         
-        // Final score lock: If game is over, we show the totals exactly as they are in DB
         if(calcApplied && !gameIsOver) { 
-            totEl.innerText = totals[i] + lastDiffs[i]; totEl.classList.add('preview-mode'); 
+            totEl.innerText = totals[i] + lastDiffs[i]; 
+            totEl.classList.add('preview-mode'); 
         } else { 
-            totEl.innerText = totals[i]; totEl.classList.remove('preview-mode'); 
+            totEl.innerText = totals[i]; 
+            totEl.classList.remove('preview-mode'); 
         }
         
         totEl.classList.toggle('dealer-active-score', i === dealerIdx);
@@ -179,10 +188,14 @@
         document.getElementById('bid-'+i).disabled = !isAdmin || bidsLocked || gameIsOver;
         document.getElementById('w-'+i).className = 'res-btn' + (roundRes[i] === 'w' ? ' win-active' : '');
         document.getElementById('l-'+i).className = 'res-btn' + (roundRes[i] === 'l' ? ' loss-active' : '');
+        
         const p = document.getElementById('pop-'+i);
-        // Don't show popups if game is over
-        if (lastDiffs[i] !== 0 && !gameIsOver) { p.innerText = (lastDiffs[i] > 0 ? "+" : "") + lastDiffs[i]; p.style.color = lastDiffs[i] > 0 ? "#4caf50" : "#ff5252"; }
-        else p.innerText = "";
+        if (lastDiffs[i] !== 0 && !gameIsOver) { 
+            p.innerText = (lastDiffs[i] > 0 ? "+" : "") + lastDiffs[i]; 
+            p.style.color = lastDiffs[i] > 0 ? "#4caf50" : "#ff5252"; 
+        } else {
+            p.innerText = "";
+        }
       }
 
       document.getElementById('bid-btn').innerText = bidsLocked ? "REBID" : "BID";
@@ -208,17 +221,14 @@
     };
 
     window.handleNextClick = () => {
-      // PREVENT MULTI-CLICK AND WINNER OVERFLOW
       if(!isAdmin || gameWinner !== null || matchWinner !== null) return;
       
       let nt = [...totals];
       for(let i=0; i<4; i++) nt[i] += lastDiffs[i];
       
-      // Update history before doing winner checks
       history.push({rd: round, s: [...nt]});
       totals = [...nt];
       
-      // Check Winners
       let w1 = ((totals[0] >= 41 && totals[2] >= 0) || (totals[2] >= 41 && totals[0] >= 0));
       let w2 = ((totals[1] >= 41 && totals[3] >= 0) || (totals[3] >= 41 && totals[1] >= 0));
       
@@ -233,7 +243,6 @@
         gameWinner = wi;
         if(teamWins[wi] >= Math.ceil(matchLimit/2)) matchWinner = wi;
         
-        // RESET PENDING CALCS SO THEY DON'T DOUBLE ADD
         lastDiffs = [0,0,0,0];
         calcApplied = false;
       } else {
@@ -322,8 +331,6 @@
     window.showWarning = (m) => { document.getElementById('warning-msg').innerText = m; document.getElementById('warning-overlay').style.display = 'flex'; };
     window.closeWarning = () => { document.getElementById('warning-overlay').style.display = 'none'; };
     window.changeMatchType = (v) => { if(isAdmin) { matchLimit = parseInt(v); pushState(); } };
-    
-    // Clear the winner flags - Buttons remain locked until RESET is chosen
     window.closeWinnerOverlay = () => { if(!isAdmin) return; gameWinner = null; matchWinner = null; pushState(); };
 
     const pushState = () => { if(isAdmin) set(stateRef, { round, totals, teamWins, dealerIdx, history, matchLimit, bidsLocked, currentBids, roundRes, lastDiffs, gameWinner, matchWinner, playerGameWins, playerNames, voidedRounds, calcApplied }); };
@@ -331,7 +338,9 @@
     const renderHistory = () => { 
         const hb = document.getElementById('hist-body'); hb.innerHTML = ""; 
         let comb = [...history.map(h => ({...h, v:false})), ...voidedRounds.map(v => ({...v, v:true}))];
-        comb.sort((a,b) => b.rd - a.rd).forEach(r => { hb.innerHTML += `<tr class="${r.v ? 'void-row' : ''}"><td>${r.rd}</td><td>${r.s[0]}</td><td>${r.s[1]}</td><td>${r.s[2]}</td><td>${r.s[3]}</td></tr>`; });
+        comb.sort((a,b) => b.rd - a.rd).forEach(r => { 
+            hb.innerHTML += `<tr class="${r.v ? 'void-row' : ''}"><td>${r.rd}</td><td>${r.s[0]}</td><td>${r.s[1]}</td><td>${r.s[2]}</td><td>${r.s[3]}</td></tr>`; 
+        });
     };
     window.announceScore = () => {
       const p = [0,1,2,3].map(i => ({ name: playerNames[i].toUpperCase() === "WAEL" ? "Wah El" : playerNames[i], score: totals[i] }));
